@@ -1,0 +1,39 @@
+[load] tokenizer + config
+Current Triton version 3.2.0 is below the recommended 3.3.0 version. Errors may occur and these issues will not be fixed. Please consider upgrading Triton.
+Current Python version 3.10 is below the recommended 3.11 version. It is recommended to upgrade to Python 3.11 or higher for the best experience.
+🚨 `generation_mode` is part of KimiLinearForCausalLM.forward's signature, but not documented. Make sure to add it to the docstring of the function in /root/.cache/huggingface/modules/transformers_modules/moonshotai/Kimi_hyphen_Linear_hyphen_48B_hyphen_A3B_hyphen_Base/3b171c17bfc4ee348599b6781a2ca8715c21c8dc/modeling_kimi.py.
+  patched fused_kda_gate (API skew); all other kernels are real Triton
+[load] weights (~96 GB) -> cuda
+Ignoring the provided attention implementation eager
+Using flash_attention_2 backend instead.
+Loading checkpoint shards:   0%|          | 0/20 [00:00<?, ?it/s]Loading checkpoint shards:   5%|▌         | 1/20 [00:00<00:08,  2.20it/s]Loading checkpoint shards:  10%|█         | 2/20 [00:00<00:08,  2.11it/s]Loading checkpoint shards:  15%|█▌        | 3/20 [00:01<00:08,  2.10it/s]Loading checkpoint shards:  20%|██        | 4/20 [00:01<00:07,  2.10it/s]Loading checkpoint shards:  25%|██▌       | 5/20 [00:02<00:07,  2.09it/s]Loading checkpoint shards:  30%|███       | 6/20 [00:02<00:06,  2.09it/s]Loading checkpoint shards:  35%|███▌      | 7/20 [00:03<00:06,  2.09it/s]Loading checkpoint shards:  40%|████      | 8/20 [00:03<00:05,  2.09it/s]Loading checkpoint shards:  45%|████▌     | 9/20 [00:04<00:05,  2.09it/s]Loading checkpoint shards:  50%|█████     | 10/20 [00:04<00:04,  2.20it/s]Loading checkpoint shards:  55%|█████▌    | 11/20 [00:05<00:04,  2.17it/s]Loading checkpoint shards:  60%|██████    | 12/20 [00:05<00:03,  2.15it/s]Loading checkpoint shards:  65%|██████▌   | 13/20 [00:06<00:03,  2.23it/s]Loading checkpoint shards:  70%|███████   | 14/20 [00:06<00:02,  2.19it/s]Loading checkpoint shards:  75%|███████▌  | 15/20 [00:07<00:02,  2.16it/s]Loading checkpoint shards:  80%|████████  | 16/20 [00:07<00:01,  2.24it/s]Loading checkpoint shards:  85%|████████▌ | 17/20 [00:07<00:01,  2.19it/s]Loading checkpoint shards:  90%|█████████ | 18/20 [00:08<00:00,  2.16it/s]Loading checkpoint shards:  95%|█████████▌| 19/20 [00:08<00:00,  2.25it/s]Loading checkpoint shards: 100%|██████████| 20/20 [00:09<00:00,  2.56it/s]Loading checkpoint shards: 100%|██████████| 20/20 [00:09<00:00,  2.21it/s]
+  loaded. cuda mem: 91.5 GiB
+seed 0: acc cold=0.67 warm=0.67 mism=0.58 | mean warm-mism = +0.3900
+seed 1: acc cold=0.42 warm=0.33 mism=0.33 | mean warm-mism = -0.0612
+seed 2: acc cold=0.58 warm=0.50 mism=0.58 | mean warm-mism = +0.1463
+seed 3: acc cold=0.50 warm=0.58 mism=0.42 | mean warm-mism = +0.5034
+seed 4: acc cold=0.58 warm=0.67 mism=0.50 | mean warm-mism = +0.1022
+seed 5: acc cold=0.33 warm=0.42 mism=0.33 | mean warm-mism = +0.0500
+seed 6: acc cold=0.50 warm=0.50 mism=0.50 | mean warm-mism = +0.1989
+seed 7: acc cold=0.42 warm=0.50 mism=0.58 | mean warm-mism = +0.3740
+
+=== the six bars: mean margin (nats), 95% bootstrap CI ===
+  cold        on A-facts  mean =  -0.0714  CI [-0.3029, +0.1709]  acc = 0.50
+  cold        on B-facts  mean = +17.3850  CI [+16.9923, +17.7796]  acc = 1.00
+  warm        on A-facts  mean =  +0.1907  CI [-0.0557, +0.4500]  acc = 0.52
+  warm        on B-facts  mean = +17.1534  CI [+16.7196, +17.5926]  acc = 1.00
+  mismatched  on A-facts  mean =  -0.0222  CI [-0.2524, +0.2181]  acc = 0.48
+  mismatched  on B-facts  mean = +17.1578  CI [+16.7013, +17.6132]  acc = 1.00
+  wrote bars.json and per_item.csv (576 rows)
+
+=== 8 seeds x 12 facts = 96 paired observations ===
+warm - mismatched  (HEADLINE)    mean = +0.2130   95% CI [+0.1183, +0.3073]   64/96 positive
+warm - cold                      mean = +0.2621   95% CI [+0.1426, +0.3833]   62/96 positive
+mismatched - cold                mean = +0.0492   95% CI [-0.0493, +0.1485]   51/96 positive
+
+depth profile of warm - mismatched:
+  depth 0.00-0.33  n= 32  mean = +0.2380
+  depth 0.33-0.67  n= 32  mean = +0.1346
+  depth 0.67-1.01  n= 32  mean = +0.2663
+
+VERDICT: document-specific transfer (CI excludes 0)

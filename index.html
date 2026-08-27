@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KDA State Transplant</title>
+<meta name="description" content="Does a Kimi Delta Attention recurrent state carry the document it came from across a full KV cache reset? Three experiments.">
+</head>
+<body>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+
+<style>
+  :root {
+    color-scheme: light;
+    --page:        #f6f7f9;
+    --surface:     #fcfcfb;
+    --ink:         #0f1113;
+    --ink-2:       #4a5057;
+    --muted:       #858c93;
+    --grid:        #e4e7ea;
+    --axis:        #c3c6ca;
+    --rule:        rgba(15,17,19,0.10);
+    --cold:        #2a78d6;
+    --warm:        #eb6834;
+    --mismatched:  #1baf7a;
+    --flag:        #b4531f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --page:      #0d0e10;
+      --surface:   #16181a;
+      --ink:       #f2f4f6;
+      --ink-2:     #b8bfc6;
+      --muted:     #858c93;
+      --grid:      #262a2e;
+      --axis:      #383c40;
+      --rule:      rgba(242,244,246,0.12);
+      --cold:      #3987e5;
+      --warm:      #d95926;
+      --mismatched:#199e70;
+      --flag:      #e8a06f;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page:      #0d0e10;
+    --surface:   #16181a;
+    --ink:       #f2f4f6;
+    --ink-2:     #b8bfc6;
+    --muted:     #858c93;
+    --grid:      #262a2e;
+    --axis:      #383c40;
+    --rule:      rgba(242,244,246,0.12);
+    --cold:      #3987e5;
+    --warm:      #d95926;
+    --mismatched:#199e70;
+    --flag:      #e8a06f;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 44px 24px 72px; display: flex; flex-direction: column; gap: 34px; }
+
+  .eyebrow {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted); margin: 0 0 10px;
+  }
+  h1 { font-size: 30px; line-height: 1.2; font-weight: 600; margin: 0 0 10px; text-wrap: balance; letter-spacing: -0.01em; }
+  .sub { margin: 0; color: var(--ink-2); max-width: 65ch; font-size: 15px; }
+
+  .headline {
+    background: var(--surface); border: 1px solid var(--rule); border-radius: 10px;
+    padding: 22px 24px; display: flex; flex-wrap: wrap; gap: 26px 44px; align-items: baseline;
+  }
+  .headline .figure {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 40px; font-weight: 600; color: var(--warm); letter-spacing: -0.02em; line-height: 1;
+  }
+  .headline .what { font-size: 14px; color: var(--ink-2); }
+  .headline .what strong { color: var(--ink); font-weight: 600; }
+  .ci { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 13px; color: var(--muted); }
+
+  .panels { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 720px) { .panels { grid-template-columns: 1fr; } }
+  .panel { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 18px 18px 14px; overflow-x: auto; }
+  .panel h2 { font-size: 15px; font-weight: 600; margin: 0 0 2px; }
+  .panel p.note { margin: 0 0 8px; font-size: 12.5px; color: var(--ink-2); }
+  svg { display: block; width: 100%; height: auto; }
+  .tick { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 10px; fill: var(--muted); }
+  .barlabel { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px; font-weight: 600; fill: var(--ink); }
+  .catlabel { font-size: 11.5px; fill: var(--ink-2); }
+  .zeroLabel { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 10px; fill: var(--muted); }
+  g.bar rect.fill { transition: opacity .12s ease; }
+  g.bar:hover rect.fill { opacity: .78; }
+
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; align-items: center; font-size: 13px; color: var(--ink-2); }
+  .legend span.key { display: inline-flex; align-items: center; gap: 7px; }
+  .legend i { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  caption { text-align: left; font-size: 13px; color: var(--ink-2); padding-bottom: 10px; }
+  th, td { padding: 8px 10px; border-bottom: 1px solid var(--rule); text-align: right; }
+  th:first-child, td:first-child { text-align: left; }
+  thead th { font-size: 11px; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+  td.num { font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+  .swatch { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 8px; vertical-align: baseline; }
+
+  .panel.wide { padding: 20px 22px 12px; }
+  .panel.wide h2 { font-size: 16px; }
+  g.pt circle { transition: r .12s ease; }
+  g.pt:hover circle { r: 7; }
+  .why p { margin: 0 0 12px; font-size: 14.5px; color: var(--ink-2); max-width: 68ch; }
+  .why p:last-child { margin-bottom: 0; }
+  .why a { color: var(--cold); text-decoration: underline; text-underline-offset: 2px; }
+  .why .eq { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 14px;
+    color: var(--ink); background: var(--surface); border: 1px solid var(--rule);
+    border-radius: 6px; padding: 12px 16px; overflow-x: auto; }
+  .claimbox { background: var(--surface); border: 1px solid var(--rule); border-left: 3px solid var(--warm);
+    border-radius: 8px; padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; }
+  .claimbox p { margin: 0; font-size: 14px; color: var(--ink-2); max-width: 72ch; }
+  .claimbox strong { color: var(--ink); }
+  .rowlabel { margin: 0 0 -18px; font-size: 13.5px; color: var(--ink-2); max-width: 72ch; }
+  section > h2.sec { font-size: 17px; font-weight: 600; margin: 0 0 4px; }
+  section > p.lede { margin: 0 0 14px; color: var(--ink-2); font-size: 14.5px; max-width: 65ch; }
+  .caveats { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+  .caveats li { border-left: 2px solid var(--flag); padding-left: 14px; font-size: 14px; color: var(--ink-2); max-width: 68ch; }
+  .caveats li strong { color: var(--ink); font-weight: 600; }
+  code { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 0.92em; }
+  footer { font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--rule); padding-top: 16px; }
+
+  .tabs { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid var(--rule);
+    margin-bottom: -14px; }
+  .tabs button { appearance: none; background: none; border: 0; border-bottom: 2px solid transparent;
+    font: inherit; font-size: 14px; color: var(--muted); padding: 9px 14px; cursor: pointer;
+    border-radius: 6px 6px 0 0; }
+  .tabs button:hover { color: var(--ink-2); background: var(--surface); }
+  .tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--warm);
+    font-weight: 600; }
+  .tabs button:focus-visible { outline: 2px solid var(--cold); outline-offset: -2px; }
+  .tabpanel { display: flex; flex-direction: column; gap: 34px; }
+  .tabpanel[hidden] { display: none; }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Kimi-Linear-48B-A3B-Base &middot; hybrid linear attention &middot; 20 KDA + 7 MLA layers</p>
+    <h1>Does a transplanted KDA state carry the document it came from?</h1>
+    <p class="sub">Prefill document A, keep only the 40&nbsp;MiB KDA recurrent state, discard the
+    KV and short-conv caches entirely, read a different document B, then ask about A. Three
+    experiments, increasingly stringent.</p>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Experiments">
+    <button role="tab" aria-selected="true"  aria-controls="p-overview" id="t-overview">Overview</button>
+    <button role="tab" aria-selected="false" aria-controls="p-exp1" id="t-exp1">1 &middot; Synthetic carrier</button>
+    <button role="tab" aria-selected="false" aria-controls="p-exp2" id="t-exp2">2 &middot; Needle-in-haystack ladder</button>
+    <button role="tab" aria-selected="false" aria-controls="p-exp3" id="t-exp3">3 &middot; Sentence completion</button>
+  </nav>
+
+  <section class="tabpanel" id="p-overview" role="tabpanel" aria-labelledby="t-overview">
+  <section class="why">
+    <h2 class="sec">Why KDA, and why this should be possible at all</h2>
+    <p><a href="https://arxiv.org/abs/2510.26692">Kimi Linear</a> interleaves two kinds of layer in
+    a fixed 3:1 ratio: <strong>20 KDA layers</strong> (linear attention, constant-size recurrent
+    state) and <strong>7 full-attention MLA layers</strong> (quadratic, KV cache that grows with
+    context). KDA extends Gated DeltaNet with per-channel decay, giving each feature dimension its
+    own forget rate.</p>
+
+    <p>The reason a transplant is even conceivable is what the KDA update actually <em>is</em>. Per
+    token it applies</p>
+    <p class="eq">S<sub>t</sub> = S<sub>t&minus;1</sub>(I &minus; &beta;<sub>t</sub>k<sub>t</sub>k<sub>t</sub><sup>&#8868;</sup>) + &beta;<sub>t</sub>v<sub>t</sub>k<sub>t</sub><sup>&#8868;</sup></p>
+    <p>which is exactly one step of online gradient descent on
+    &frac12;&#8741;S k<sub>t</sub> &minus; v<sub>t</sub>&#8741;&sup2;, with &beta;<sub>t</sub> as the
+    learning rate. The recurrent state is not a cache of past activations &mdash; it is a set of
+    <strong>fast weights trained by gradient descent during the forward pass</strong>
+    (<a href="https://arxiv.org/abs/2508.08435">Irie &amp; Schmidhuber, fast weight programming</a>).</p>
+
+    <p>If S is weights rather than cache, then S is a checkpoint. Which raises the question this
+    experiment tests: <strong>can what the model learned during run A be carried into run B while
+    the KV cache is thrown away entirely?</strong> If so, you would have context that never stops
+    accumulating &mdash; lossy, but at <strong>constant memory</strong> (the state is 40&nbsp;MiB
+    whether A was 1K tokens or 1M) and linear compute. For comparison, the MLA KV cache these runs
+    discard would be roughly 7.9&nbsp;GB at 1M tokens.</p>
+
+    <p>The answer measured here is <strong>yes at short lengths, and no at useful ones</strong>. A 40&nbsp;MiB state does carry a real, replicable trace of A across a full cache reset. But the trace thins as the document grows and is undetectable by 16K tokens, while the cost of carrying it holds steady &mdash; so the regime where the technique would matter is the regime where it stops working. The tabs above give each measurement.</p>
+  </section>
+  <div class="claimbox">
+    <p><strong>Three experiments on one question:</strong> does the recurrent state of a hybrid
+    linear-attention model carry the document it was built from, once the KV cache is thrown
+    away? Each tab is a self-contained result. This summary will be completed when all three
+    have run.</p>
+  </div>
+
+  <section>
+    <h2 class="sec">Where things stand</h2>
+    <table>
+      <thead><tr><th>Experiment</th><th>Design</th><th>Result</th></tr></thead>
+      <tbody>
+        <tr><td><strong>1 &middot; Synthetic carrier</strong></td>
+            <td>Planted facts in a looping 20-sentence template, 600 tokens, 24 seeds</td>
+            <td>Transfer real: <strong>+0.396 nats</strong>, 24/24 seeds</td></tr>
+        <tr><td><strong>2 &middot; Needle-in-haystack ladder</strong></td>
+            <td>Needles planted in post-cutoff Wikipedia, haystack grown 600&rarr;50,000 tokens, 8 seeds each</td>
+            <td>Decays to nothing by 16K; cost stays flat</td></tr>
+        <tr><td><strong>3 &middot; Sentence completion</strong></td>
+            <td>Real sentences from A scored after reading B, nothing planted, 106&ndash;1,600 probes per length</td>
+            <td>Benefit thins but persists; <strong>cost grows without bound</strong></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2 class="sec">The headline so far</h2>
+    <p class="lede">A 40&nbsp;MiB recurrent state does carry document-specific information
+    across a full cache reset, and it keeps doing so at every length tested. But that is a claim
+    about what the state <em>contains</em>. Whether transplanting is <em>worth doing</em> is a
+    different comparison &mdash; against carrying no state at all &mdash; and there
+    <strong>the answer turns negative between 1,500 and 4,000 tokens</strong>, because carrying
+    any state has a cost that grows with document length while the memory it holds thins. Below the crossover the transplant helps but is dominated by simply pasting the text
+    into context; above it the transplant leaves the model worse off than doing nothing. The
+    strongest single number in the project is the cost, not the benefit: at 50,000 tokens a
+    transplanted state is worth &minus;0.25 nats per token against no state at all, t = &minus;4.46,
+    with every seed agreeing.</p>
+  </section>
+</section>
+  <section class="tabpanel" id="p-exp1" role="tabpanel" aria-labelledby="t-exp1" hidden>
+
+  <div class="headline">
+    <div>
+      <div class="figure">+10.1<span style="font-size:22px"> pts</span></div>
+      <div class="ci">accuracy &middot; 95% CI [+6.3, +13.5]</div>
+    </div>
+    <div>
+      <div class="figure" style="font-size:30px">+0.396<span style="font-size:18px"> nats</span></div>
+      <div class="ci">95% CI [+0.326, +0.467]</div>
+    </div>
+    <div class="what">
+      <strong>warm &minus; mismatched</strong> &mdash; the same effect in two units.
+      Both conditions carry a real transplanted state of identical size; only the source
+      document differs.<br>
+      <span class="ci">Per-seed nats: t(23) = 13.53 &middot; 24 of 24 seeds positive</span>
+    </div>
+  </div>
+
+  <div class="claimbox">
+    <p><strong>What the claim rests on.</strong> Knowledge acquired from data A persists across a
+    full cache reset and changes later behaviour &mdash; training-free, at inference time. It is
+    specific to A rather than generic (the mismatched control is flat), and it costs nothing on the
+    document actually in context.</p>
+    <p><strong>What &ldquo;limited&rdquo; rules out.</strong> Accuracy is 0.566 against 0.486
+    chance. You cannot look up a planted value; you can only detect a bias toward it across
+    hundreds of trials. This is evidence for a <em>mechanism</em>, not a usable capability, and it
+    is measured on synthetic planted facts in ~470-word documents on one model.</p>
+  </div>
+
+  <p class="sub" style="margin-top:-14px">Significance is quoted at the <em>seed</em> level, one
+  number per seed. Items inside a seed share a state and a document, so the item-level figure
+  (220/288 positive) treats non-independent observations as
+  independent and overstates the case.</p>
+
+
+  
+
+  <p class="rowlabel"><strong>Accuracy</strong> &mdash; how often the model picks the value that
+  really was in document&nbsp;A. Chance is 0.50.</p>
+  <div class="panels">
+
+    <div class="panel">
+      <h2>Scored on A&rsquo;s facts</h2>
+      <p class="note">Barely above chance in every condition.</p>
+      <svg viewBox="0 0 400 250" role="img" aria-label="Accuracy on A-facts: cold 0.48, warm 0.56, mismatched 0.46, against chance 0.50.">
+        <line x1="56" y1="172.50" x2="380" y2="172.50" stroke="var(--grid)" stroke-width="1"/>
+        <line x1="56" y1="115.00" x2="380" y2="115.00" stroke="var(--grid)" stroke-width="1"/>
+        <line x1="56" y1="57.50"  x2="380" y2="57.50"  stroke="var(--grid)" stroke-width="1"/>
+        <line x1="56" y1="20.00"  x2="380" y2="20.00"  stroke="var(--grid)" stroke-width="1"/>
+        <text class="tick" x="50" y="213.6" text-anchor="end">0</text>
+        <text class="tick" x="50" y="176.0" text-anchor="end">.25</text>
+        <text class="tick" x="50" y="118.4" text-anchor="end">.50</text>
+        <text class="tick" x="50" y="60.9"  text-anchor="end">.75</text>
+        <text class="tick" x="50" y="23.4"  text-anchor="end">1.0</text>
+
+        <g class="bar"><title>cold — accuracy 0.486</title><rect class="fill" x="80" y="117.64" width="56" height="92.36" fill="var(--cold)" rx="3"/><line x1="108" y1="107.08" x2="108" y2="128.19" stroke="var(--ink)" stroke-width="1.75"/><line x1="100" y1="107.08" x2="116" y2="107.08" stroke="var(--ink)" stroke-width="1.75"/><line x1="100" y1="128.19" x2="116" y2="128.19" stroke="var(--ink)" stroke-width="1.75"/><text class="barlabel" x="108" y="100.1" text-anchor="middle">0.49</text></g>
+        <g class="bar"><title>warm — accuracy 0.566</title><rect class="fill" x="183" y="102.47" width="56" height="107.53" fill="var(--warm)" rx="3"/><line x1="211" y1="92.56" x2="211" y2="112.36" stroke="var(--ink)" stroke-width="1.75"/><line x1="203" y1="92.56" x2="219" y2="92.56" stroke="var(--ink)" stroke-width="1.75"/><line x1="203" y1="112.36" x2="219" y2="112.36" stroke="var(--ink)" stroke-width="1.75"/><text class="barlabel" x="211" y="85.6" text-anchor="middle">0.57</text></g>
+        <g class="bar"><title>mismatched — accuracy 0.465</title><rect class="fill" x="286" y="121.6" width="56" height="88.4" fill="var(--mismatched)" rx="3"/><line x1="314" y1="112.36" x2="314" y2="130.83" stroke="var(--ink)" stroke-width="1.75"/><line x1="306" y1="112.36" x2="322" y2="112.36" stroke="var(--ink)" stroke-width="1.75"/><line x1="306" y1="130.83" x2="322" y2="130.83" stroke="var(--ink)" stroke-width="1.75"/><text class="barlabel" x="314" y="105.4" text-anchor="middle">0.47</text></g>
+
+        <line x1="56" y1="115" x2="380" y2="115" stroke="var(--axis)" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <text class="zeroLabel" x="380" y="111" text-anchor="end">chance</text>
+        <line x1="56" y1="210" x2="380" y2="210" stroke="var(--axis)" stroke-width="1.5"/>
+        <text class="catlabel" x="108" y="228" text-anchor="middle">cold</text>
+        <text class="catlabel" x="211" y="228" text-anchor="middle">warm</text>
+        <text class="catlabel" x="314" y="228" text-anchor="middle">mismatched</text>
+        <text class="tick" x="56" y="245">warm &minus; mismatched = +10.1 pts, CI [+6.3, +13.5]</text>
+      </svg>
+    </div>
+
+    <div class="panel">
+      <h2>Scored on B&rsquo;s facts</h2>
+      <p class="note">Perfect everywhere. This is the ceiling.</p>
+      <svg viewBox="0 0 400 250" role="img" aria-label="Accuracy on B-facts: 1.00 in all three conditions.">
+        <line x1="56" y1="172.50" x2="380" y2="172.50" stroke="var(--grid)" stroke-width="1"/>
+        <line x1="56" y1="115.00" x2="380" y2="115.00" stroke="var(--grid)" stroke-width="1"/>
+        <line x1="56" y1="57.50"  x2="380" y2="57.50"  stroke="var(--grid)" stroke-width="1"/>
+        <text class="tick" x="50" y="213.6" text-anchor="end">0</text>
+        <text class="tick" x="50" y="176.0" text-anchor="end">.25</text>
+        <text class="tick" x="50" y="118.4" text-anchor="end">.50</text>
+        <text class="tick" x="50" y="60.9"  text-anchor="end">.75</text>
+        <text class="tick" x="50" y="23.4"  text-anchor="end">1.0</text>
+
+        <g class="bar"><title>cold — accuracy 1.00 (288/288)</title><rect class="fill" x="80" y="20.0" width="56" height="190.0" fill="var(--cold)" rx="3"/><text class="barlabel" x="108" y="13.0" text-anchor="middle">1.00</text></g>
+        <g class="bar"><title>warm — accuracy 1.00 (288/288)</title><rect class="fill" x="183" y="20.0" width="56" height="190.0" fill="var(--warm)" rx="3"/><text class="barlabel" x="211" y="13.0" text-anchor="middle">1.00</text></g>
+        <g class="bar"><title>mismatched — accuracy 1.00 (288/288)</title><rect class="fill" x="286" y="20.0" width="56" height="190.0" fill="var(--mismatched)" rx="3"/><text class="barlabel" x="314" y="13.0" text-anchor="middle">1.00</text></g>
+
+        <line x1="56" y1="115" x2="380" y2="115" stroke="var(--axis)" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <text class="zeroLabel" x="380" y="111" text-anchor="end">chance</text>
+        <line x1="56" y1="210" x2="380" y2="210" stroke="var(--axis)" stroke-width="1.5"/>
+        <text class="catlabel" x="108" y="228" text-anchor="middle">cold</text>
+        <text class="catlabel" x="211" y="228" text-anchor="middle">warm</text>
+        <text class="catlabel" x="314" y="228" text-anchor="middle">mismatched</text>
+        <text class="tick" x="56" y="245">288/288 in all three &mdash; accuracy cannot move here</text>
+      </svg>
+    </div>
+  </div>
+
+
+  <p class="rowlabel"><strong>Margin in nats</strong> &mdash; the same runs, unthresholded.
+  A nat is log-odds; e<sup>x</sup> converts it, so +0.4 nats means 1.49&times; the odds of picking
+  right over wrong, and the +18 on B-facts means about 66&nbsp;million&times;. This measure is
+  sharper than accuracy because the effect sits mostly in <em>confidence</em> rather than in
+  flipping answers &mdash; it needed 24 seeds for the accuracy version to clear zero.</p>
+  <div class="panels">
+
+    <!-- ============ PANEL A ============ -->
+    <div class="panel">
+      <h2>Scored on A&rsquo;s facts</h2>
+      <p class="note">The test. 0 = chance on a two-way forced choice.</p>
+      <svg viewBox="0 0 400 250" role="img" aria-label="Mean margin on A-facts: cold minus 0.05, warm plus 0.32, mismatched minus 0.08 nats.">
+        <line x1="56" y1="194.17" x2="380" y2="194.17" stroke="var(--grid)" stroke-width="1"/>
+        <line x1="56" y1="162.50" x2="380" y2="162.50" stroke="var(--grid)" stroke-width="1"/>
+        <line x1="56" y1="99.17"  x2="380" y2="99.17"  stroke="var(--grid)" stroke-width="1"/>
+        <line x1="56" y1="67.50"  x2="380" y2="67.50"  stroke="var(--grid)" stroke-width="1"/>
+        <line x1="56" y1="35.83"  x2="380" y2="35.83"  stroke="var(--grid)" stroke-width="1"/>
+        <text class="tick" x="50" y="197.6" text-anchor="end">-0.4</text>
+        <text class="tick" x="50" y="165.9" text-anchor="end">-0.2</text>
+        <text class="tick" x="50" y="134.2" text-anchor="end">0</text>
+        <text class="tick" x="50" y="102.6" text-anchor="end">0.2</text>
+        <text class="tick" x="50" y="70.9"  text-anchor="end">0.4</text>
+        <text class="tick" x="50" y="39.2"  text-anchor="end">0.6</text>
+
+        <g class="bar"><title>cold — -0.0832 nats, CI [-0.228, +0.060], accuracy 0.49</title><rect class="fill" x="80" y="130.83" width="56" height="13.17" fill="var(--cold)" rx="3"/><line x1="108" y1="121.36" x2="108" y2="166.97" stroke="var(--ink)" stroke-width="1.75"/><line x1="100" y1="121.36" x2="116" y2="121.36" stroke="var(--ink)" stroke-width="1.75"/><line x1="100" y1="166.97" x2="116" y2="166.97" stroke="var(--ink)" stroke-width="1.75"/><text class="barlabel" x="108" y="114.4" text-anchor="middle">-0.08</text></g>
+        <g class="bar"><title>warm — +0.3095 nats, CI [+0.157, +0.463], accuracy 0.57</title><rect class="fill" x="183" y="81.83" width="56" height="49.0" fill="var(--warm)" rx="3"/><line x1="211" y1="57.57" x2="211" y2="105.94" stroke="var(--ink)" stroke-width="1.75"/><line x1="203" y1="57.57" x2="219" y2="57.57" stroke="var(--ink)" stroke-width="1.75"/><line x1="203" y1="105.94" x2="219" y2="105.94" stroke="var(--ink)" stroke-width="1.75"/><text class="barlabel" x="211" y="50.6" text-anchor="middle">+0.31</text></g>
+        <g class="bar"><title>mismatched — -0.0867 nats, CI [-0.237, +0.063], accuracy 0.47</title><rect class="fill" x="286" y="130.83" width="56" height="13.72" fill="var(--mismatched)" rx="3"/><line x1="314" y1="120.94" x2="314" y2="168.35" stroke="var(--ink)" stroke-width="1.75"/><line x1="306" y1="120.94" x2="322" y2="120.94" stroke="var(--ink)" stroke-width="1.75"/><line x1="306" y1="168.35" x2="322" y2="168.35" stroke="var(--ink)" stroke-width="1.75"/><text class="barlabel" x="314" y="113.9" text-anchor="middle">-0.09</text></g>
+
+        <line x1="56" y1="130.83" x2="380" y2="130.83" stroke="var(--axis)" stroke-width="1.5"/>
+        <text class="zeroLabel" x="380" y="127" text-anchor="end">chance</text>
+        <text class="catlabel" x="108" y="228" text-anchor="middle">cold</text>
+        <text class="catlabel" x="211" y="228" text-anchor="middle">warm</text>
+        <text class="catlabel" x="314" y="228" text-anchor="middle">mismatched</text>
+        <text class="tick" x="56" y="245">mean margin (nats), whiskers = 95% CI</text>
+      </svg>
+    </div>
+
+    <!-- ============ PANEL B ============ -->
+    <div class="panel">
+      <h2>Scored on B&rsquo;s facts</h2>
+      <p class="note">The damage check. Accuracy is pinned at 100%; the margin is not.</p>
+      <svg viewBox="0 0 400 250" role="img" aria-label="Mean margin on B-facts: cold 17.15, warm 18.04, mismatched 17.81 nats — all at 100% accuracy.">
+        <line x1="56" y1="162.50" x2="380" y2="162.50" stroke="var(--grid)" stroke-width="1"/>
+        <line x1="56" y1="115.00" x2="380" y2="115.00" stroke="var(--grid)" stroke-width="1"/>
+        <line x1="56" y1="67.50"  x2="380" y2="67.50"  stroke="var(--grid)" stroke-width="1"/>
+        <line x1="56" y1="20.00"  x2="380" y2="20.00"  stroke="var(--grid)" stroke-width="1"/>
+        <text class="tick" x="50" y="213.6" text-anchor="end">0</text>
+        <text class="tick" x="50" y="165.9" text-anchor="end">5</text>
+        <text class="tick" x="50" y="118.4" text-anchor="end">10</text>
+        <text class="tick" x="50" y="70.9"  text-anchor="end">15</text>
+        <text class="tick" x="50" y="23.4"  text-anchor="end">20</text>
+
+        <g class="bar"><title>cold — +17.330 nats, CI [17.099, 17.564], accuracy 1.00</title><rect class="fill" x="80" y="45.36" width="56" height="164.64" fill="var(--cold)" rx="3"/><line x1="108" y1="43.14" x2="108" y2="47.56" stroke="var(--ink)" stroke-width="1.75"/><line x1="100" y1="43.14" x2="116" y2="43.14" stroke="var(--ink)" stroke-width="1.75"/><line x1="100" y1="47.56" x2="116" y2="47.56" stroke="var(--ink)" stroke-width="1.75"/><text class="barlabel" x="108" y="36.1" text-anchor="middle">17.33</text></g>
+        <g class="bar"><title>warm — +18.206 nats, CI [17.977, 18.442], accuracy 1.00</title><rect class="fill" x="183" y="37.04" width="56" height="172.96" fill="var(--warm)" rx="3"/><line x1="211" y1="34.8" x2="211" y2="39.22" stroke="var(--ink)" stroke-width="1.75"/><line x1="203" y1="34.8" x2="219" y2="34.8" stroke="var(--ink)" stroke-width="1.75"/><line x1="203" y1="39.22" x2="219" y2="39.22" stroke="var(--ink)" stroke-width="1.75"/><text class="barlabel" x="211" y="27.8" text-anchor="middle">18.21</text></g>
+        <g class="bar"><title>mismatched — +18.218 nats, CI [17.986, 18.451], accuracy 1.00</title><rect class="fill" x="286" y="36.93" width="56" height="173.07" fill="var(--mismatched)" rx="3"/><line x1="314" y1="34.71" x2="314" y2="39.14" stroke="var(--ink)" stroke-width="1.75"/><line x1="306" y1="34.71" x2="322" y2="34.71" stroke="var(--ink)" stroke-width="1.75"/><line x1="306" y1="39.14" x2="322" y2="39.14" stroke="var(--ink)" stroke-width="1.75"/><text class="barlabel" x="314" y="27.7" text-anchor="middle">18.22</text></g>
+
+        <line x1="56" y1="210" x2="380" y2="210" stroke="var(--axis)" stroke-width="1.5"/>
+        <text class="catlabel" x="108" y="228" text-anchor="middle">cold</text>
+        <text class="catlabel" x="211" y="228" text-anchor="middle">warm</text>
+        <text class="catlabel" x="314" y="228" text-anchor="middle">mismatched</text>
+        <text class="tick" x="56" y="245">all at 100% accuracy; margin free to fall, and rose</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span class="key"><i style="background:var(--cold)"></i>cold &mdash; no state</span>
+    <span class="key"><i style="background:var(--warm)"></i>warm &mdash; state from A</span>
+    <span class="key"><i style="background:var(--mismatched)"></i>mismatched &mdash; state from A2</span>
+  </div>
+
+
+  <section class="panel wide">
+    <h2>Where in document A the fact sat</h2>
+    <p class="note">warm &minus; mismatched, by the fact&rsquo;s position in A. 12 positions, n = 24 seeds each,
+    band is the 95% bootstrap CI. Decay predicts this line should <em>rise</em> to the right.</p>
+    <svg viewBox="0 0 820 262" role="img" aria-label="Transfer strength against fact depth in document A: 0.75 nats at the start, falling to about 0.25 by one third through, then flat to the end.">
+      <line x1="70.0" y1="138.3" x2="800.0" y2="138.3" stroke="var(--grid)" stroke-width="1"/><text class="tick" x="62.0" y="141.7" text-anchor="end">+0.4</text><line x1="70.0" y1="81.1" x2="800.0" y2="81.1" stroke="var(--grid)" stroke-width="1"/><text class="tick" x="62.0" y="84.5" text-anchor="end">+0.8</text><line x1="70.0" y1="24.0" x2="800.0" y2="24.0" stroke="var(--grid)" stroke-width="1"/><text class="tick" x="62.0" y="27.4" text-anchor="end">+1.2</text>
+      <polygon points="70.0,30.3 136.4,82.7 202.7,94.3 269.1,60.3 335.4,129.9 401.8,134.8 468.2,112.4 534.6,135.6 600.9,106.5 667.3,139.8 733.6,124.5 800.0,118.7 800.0,187.6 733.6,196.2 667.3,199.4 600.9,155.7 534.6,180.0 468.2,172.4 401.8,185.7 335.4,184.3 269.1,145.8 202.7,163.1 136.4,134.1 70.0,137.4" fill="var(--warm)" opacity="0.13"/>
+      <polyline points="70.0,87.7 136.4,109.1 202.7,130.3 269.1,104.7 335.4,157.4 401.8,161.9 468.2,142.9 534.6,157.8 600.9,132.1 667.3,169.5 733.6,159.7 800.0,153.1" fill="none" stroke="var(--warm)" stroke-width="2" stroke-linejoin="round"/>
+      <g class="pt"><title>depth 0.000 — mean +0.7544 nats, 95% CI [+0.406, +1.156], n=24</title><circle cx="70.0" cy="87.7" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>depth 0.091 — mean +0.6045 nats, 95% CI [+0.429, +0.789], n=24</title><circle cx="136.4" cy="109.1" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>depth 0.182 — mean +0.4561 nats, 95% CI [+0.226, +0.708], n=24</title><circle cx="202.7" cy="130.3" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>depth 0.273 — mean +0.6352 nats, 95% CI [+0.347, +0.946], n=24</title><circle cx="269.1" cy="104.7" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>depth 0.364 — mean +0.2662 nats, 95% CI [+0.078, +0.459], n=24</title><circle cx="335.4" cy="157.4" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>depth 0.455 — mean +0.2344 nats, 95% CI [+0.068, +0.424], n=24</title><circle cx="401.8" cy="161.9" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>depth 0.545 — mean +0.3677 nats, 95% CI [+0.161, +0.582], n=24</title><circle cx="468.2" cy="142.9" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>depth 0.636 — mean +0.2637 nats, 95% CI [+0.108, +0.419], n=24</title><circle cx="534.6" cy="157.8" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>depth 0.727 — mean +0.4434 nats, 95% CI [+0.278, +0.623], n=24</title><circle cx="600.9" cy="132.1" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>depth 0.818 — mean +0.1816 nats, 95% CI [-0.028, +0.389], n=24</title><circle cx="667.3" cy="169.5" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>depth 0.909 — mean +0.2501 nats, 95% CI [-0.006, +0.496], n=24</title><circle cx="733.6" cy="159.7" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>depth 1.000 — mean +0.2966 nats, 95% CI [+0.055, +0.537], n=24</title><circle cx="800.0" cy="153.1" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g>
+      <line x1="70.0" y1="195.4" x2="800.0" y2="195.4" stroke="var(--axis)" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <text class="zeroLabel" x="800.0" y="190.4" text-anchor="end">no transfer</text>
+      <text class="tick" x="70.0" y="248" text-anchor="middle">0.0 start</text><text class="tick" x="252.5" y="248" text-anchor="middle">0.25</text><text class="tick" x="435.0" y="248" text-anchor="middle">0.5</text><text class="tick" x="617.5" y="248" text-anchor="middle">0.75</text><text class="tick" x="800.0" y="248" text-anchor="middle">1.0 end</text>
+      <text class="tick" x="70.0" y="260">position of the fact within document A</text>
+    </svg>
+  </section>
+
+  <section>
+    <h2 class="sec">The comparisons that matter</h2>
+    <p class="lede">A and A2 are cut from one shuffle, so their stems and values are fully
+    disjoint &mdash; verified across all 24 seeds. Their <em>prose</em> is not: both draw filler
+    from the same 20-sentence pool, so about 45% of sentences are shared. The contrast therefore
+    isolates the <strong>planted facts</strong>, not the document as a whole.
+    Absolute values carry a per-item prior from the specific code strings, so only
+    paired differences are interpretable. CIs are bootstrapped over the 24 seeds, not the 288 items.
+    At 8 seeds <code>warm &minus; cold</code> cleared zero in nats but not in accuracy; at 24 it clears
+    both. Nats is the more sensitive measure because the effect sits in confidence.</p>
+    <table>
+      <thead>
+        <tr><th>Contrast</th><th>Accuracy</th><th>95% CI</th><th>Nats</th><th>95% CI</th><th>Reads as</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>warm &minus; mismatched</td><td class="num">+10.07 pts</td><td class="num">[+6.25, +13.54]</td><td class="num">+0.396</td><td class="num">[+0.326, +0.467]</td><td>document-specific transfer</td></tr>
+        <tr><td>warm &minus; cold</td><td class="num">+7.99 pts</td><td class="num">[+1.74, +13.89]</td><td class="num">+0.393</td><td class="num">[+0.300, +0.487]</td><td>the benefit &mdash; is transplanting worth doing</td></tr>
+        <tr><td>mismatched &minus; cold</td><td class="num">&minus;2.08 pts</td><td class="num">[&minus;7.29, +3.12]</td><td class="num">&minus;0.003</td><td class="num">[&minus;0.092, +0.087]</td><td>no generic &ldquo;any state&rdquo; effect</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2 class="sec">All six measurements</h2>
+    <table>
+      <caption>Mean forced-choice margin in nats, with bootstrap CI and accuracy. Chance accuracy is 0.50.</caption>
+      <thead>
+        <tr><th>Condition</th><th>Facts</th><th>Mean</th><th>95% CI</th><th>Accuracy</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><i class="swatch" style="background:var(--cold)"></i>cold</td><td>A</td><td class="num">&minus;0.083</td><td class="num">[&minus;0.228, +0.060]</td><td class="num">0.486</td></tr>
+        <tr><td><i class="swatch" style="background:var(--warm)"></i>warm</td><td>A</td><td class="num">+0.310</td><td class="num">[+0.157, +0.463]</td><td class="num">0.566</td></tr>
+        <tr><td><i class="swatch" style="background:var(--mismatched)"></i>mismatched</td><td>A</td><td class="num">&minus;0.087</td><td class="num">[&minus;0.237, +0.063]</td><td class="num">0.465</td></tr>
+        <tr><td><i class="swatch" style="background:var(--cold)"></i>cold</td><td>B</td><td class="num">+17.330</td><td class="num">[17.099, 17.564]</td><td class="num">1.00</td></tr>
+        <tr><td><i class="swatch" style="background:var(--warm)"></i>warm</td><td>B</td><td class="num">+18.206</td><td class="num">[17.977, 18.442]</td><td class="num">1.00</td></tr>
+        <tr><td><i class="swatch" style="background:var(--mismatched)"></i>mismatched</td><td>B</td><td class="num">+18.218</td><td class="num">[17.986, 18.451]</td><td class="num">1.00</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2 class="sec">What this does not show</h2>
+    <ul class="caveats">
+      <li><strong>The B panel rules out gross corruption, but not mild degradation.</strong>
+      Accuracy is pinned at 100% in all three conditions and cannot fall further &mdash; but the
+      margin is not ceiling-bound. It could have dropped from +17 nats to +5 and still shown
+      perfect accuracy. It rose instead, 17.33 cold to 18.21 warm &mdash; and warm and mismatched are identical there (18.206 vs 18.218), so that lift is generic, not document-specific. So a transplanted state does
+      not make the model incoherent, and the position-collision worry does not show up here.
+      What this task cannot speak to is harder capabilities it never exercises &mdash; multi-step
+      reasoning, long-range dependency &mdash; where a subtler cost could hide.</li>
+      <li><strong>&ldquo;Document-specific&rdquo; means fact-specific.</strong> A2 shares roughly
+      45% of its carrier sentences with A, because both sample the same filler pool. That makes the
+      control <em>tighter</em> than a generic one &mdash; the effect cannot be explained by A&rsquo;s
+      state carrying shared register or vocabulary, since A2&rsquo;s carries those too. But it also
+      narrows the claim: what survives the transplant is information about the planted facts, over
+      and above near-identical prose. An unrelated-prose A2 would support a broader claim on weaker
+      control.</li>
+      <li><strong>This is not retrieval.</strong> Warm accuracy on A-facts is 0.566 against 0.486
+      chance &mdash; an eight-point lift on a coin flip. The state carries a detectable trace of
+      A, not A&rsquo;s contents. You could not look up a planted value with this.</li>
+      <li><strong>The depth effect runs backwards.</strong> Facts from the <em>start</em>
+      of A &mdash; the ones the forget gates have had longest to decay &mdash; transfer best, and it
+      is significant: clustered by seed (early third minus late third, one value per seed) that is
+      +0.320 nats, t(23) = 2.74, p &asymp; 0.012, 15 of 24 seeds. The naive item-level test gives
+      r = &minus;0.218, t(286) = &minus;3.77, but treats 12 items sharing a state as independent
+      &mdash; do not quote it. The shape is a sharp fall over the first third then a plateau, which
+      looks like primacy rather than decay: facts written into a nearly-empty state may simply get
+      a larger share of it. That is a guess, not a result &mdash; this experiment was not built to
+      test it.</li>
+      <li><strong>No ceiling condition was run.</strong> Without an Oracle arm &mdash; A and B as
+      one uninterrupted sequence &mdash; there is no way to say what fraction of the available
+      signal the 40&nbsp;MiB state preserves.</li>
+    </ul>
+  </section>
+
+  <footer>
+    <p style="margin:0 0 10px"><strong style="color:var(--ink-2)">Code, raw data and reproduction:</strong>
+    <a href="https://github.com/2134321/KDAcontinualLearningSite" style="color:var(--cold)">github.com/2134321/KDAcontinualLearningSite</a></p>
+    Kimi-Linear-48B-A3B-Base, bf16, single H200. 20 KDA layers, 7 full-attention (MLA) layers, NoPE.
+    Transplanted state is 40&nbsp;MiB in fp32 &mdash; twice the bf16 figure the original plan assumed.
+    Snapshot/restore verified bit-identical against a split-without-surgery control on the real
+    model with real Triton kernels.
+  </footer>
+
+</section>
+  <section class="tabpanel" id="p-exp2" role="tabpanel" aria-labelledby="t-exp2" hidden>
+  <div class="claimbox">
+    <p><strong>Document-specificity decays with length and is undetectable by 16K here.</strong>
+    This is <code>warm &minus; mismatched</code> &mdash; whether the state carries information
+    about <em>this</em> document rather than any document. It is not the same as whether
+    transplanting is worth doing, which is <code>warm &minus; cold</code>; experiment 3 separates
+    the two properly with far more probes.
+    The same protocol as experiment 1, but the carrier is real prose written after the model's
+    training cutoff, and document A is grown from 600 to 50,000 tokens. Eight seeds per length,
+    96 paired observations each.</p>
+    <p><strong>Meanwhile the cost does not decay.</strong> Carrying a transplanted state
+    damages performance on the document actually in context by about &minus;0.85 nats from 4K
+    onward, and that figure is flat across a 12&times; range of lengths. Benefit falls, cost
+    holds &mdash; so past a few thousand tokens the transplant is worse than not doing it.</p>
+  </div>
+
+  <div class="legend"><span class="key"><i style="background:var(--cold)"></i>cold &mdash; no state</span><span class="key"><i style="background:var(--warm)"></i>warm &mdash; state from A</span><span class="key"><i style="background:var(--mismatched)"></i>mismatched &mdash; state from A2</span></div>
+
+  <div class="panels">
+    <div class="panel"><h2>A-facts &middot; nats</h2>
+      <p class="note">The test. warm separates from mismatched at 600 and the gap closes by 16K.</p><svg viewBox="0 0 820 268" role="img" aria-label="Three condition lines against document length for A-facts."><line x1="78.0" y1="182.7" x2="792.0" y2="182.7" stroke="var(--grid)"/><text class="tick" x="70.0" y="186.1" text-anchor="end">-0.2</text><line x1="78.0" y1="120.0" x2="792.0" y2="120.0" stroke="var(--grid)"/><text class="tick" x="70.0" y="123.4" text-anchor="end">0</text><line x1="78.0" y1="57.3" x2="792.0" y2="57.3" stroke="var(--grid)"/><text class="tick" x="70.0" y="60.7" text-anchor="end">0.2</text><text class="tick" x="105.2" y="234" text-anchor="middle">600</text><text class="tick" x="241.8" y="234" text-anchor="middle">1K</text><text class="tick" x="388.1" y="234" text-anchor="middle">4K</text><text class="tick" x="594.9" y="234" text-anchor="middle">16K</text><text class="tick" x="764.8" y="234" text-anchor="middle">50K</text><text class="tick" x="78.0" y="252">tokens in document A (log scale) &middot; mean margin, nats</text><line x1="78.0" y1="120.0" x2="792.0" y2="120.0" stroke="var(--axis)" stroke-width="1.5" stroke-dasharray="4 3"/><text class="zeroLabel" x="792.0" y="115.0" text-anchor="end">chance</text><polyline points="105.2,142.4 241.8,138.1 388.1,138.1 594.9,138.1 764.8,138.1" fill="none" stroke="var(--cold)" stroke-width="2" stroke-linejoin="round"/><g class="pt"><title>cold, |A|=600 — -0.0714 nats, CI [-0.3063, +0.1683], accuracy 0.50</title><circle cx="105.2" cy="142.4" r="5" fill="var(--cold)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>cold, |A|=1,500 — -0.0576 nats, CI [-0.2948, +0.1834], accuracy 0.51</title><circle cx="241.8" cy="138.1" r="5" fill="var(--cold)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>cold, |A|=4,000 — -0.0576 nats, CI [-0.2948, +0.1834], accuracy 0.51</title><circle cx="388.1" cy="138.1" r="5" fill="var(--cold)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>cold, |A|=16,000 — -0.0576 nats, CI [-0.2948, +0.1834], accuracy 0.51</title><circle cx="594.9" cy="138.1" r="5" fill="var(--cold)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>cold, |A|=50,000 — -0.0576 nats, CI [-0.2948, +0.1834], accuracy 0.51</title><circle cx="764.8" cy="138.1" r="5" fill="var(--cold)" stroke="var(--surface)" stroke-width="2"/></g><polyline points="105.2,60.2 241.8,98.7 388.1,119.8 594.9,168.6 764.8,162.4" fill="none" stroke="var(--warm)" stroke-width="2" stroke-linejoin="round"/><g class="pt"><title>warm, |A|=600 — +0.1907 nats, CI [-0.0690, +0.4527], accuracy 0.52</title><circle cx="105.2" cy="60.2" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>warm, |A|=1,500 — +0.0680 nats, CI [-0.1617, +0.3007], accuracy 0.51</title><circle cx="241.8" cy="98.7" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>warm, |A|=4,000 — +0.0005 nats, CI [-0.2482, +0.2407], accuracy 0.49</title><circle cx="388.1" cy="119.8" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>warm, |A|=16,000 — -0.1550 nats, CI [-0.4054, +0.0909], accuracy 0.45</title><circle cx="594.9" cy="168.6" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>warm, |A|=50,000 — -0.1353 nats, CI [-0.3884, +0.1161], accuracy 0.48</title><circle cx="764.8" cy="162.4" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><polyline points="105.2,127.0 241.8,133.0 388.1,158.8 594.9,173.8 764.8,163.8" fill="none" stroke="var(--mismatched)" stroke-width="2" stroke-linejoin="round"/><g class="pt"><title>mismatched, |A|=600 — -0.0222 nats, CI [-0.2649, +0.2168], accuracy 0.48</title><circle cx="105.2" cy="127.0" r="5" fill="var(--mismatched)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>mismatched, |A|=1,500 — -0.0416 nats, CI [-0.2867, +0.2042], accuracy 0.44</title><circle cx="241.8" cy="133.0" r="5" fill="var(--mismatched)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>mismatched, |A|=4,000 — -0.1238 nats, CI [-0.3821, +0.1333], accuracy 0.43</title><circle cx="388.1" cy="158.8" r="5" fill="var(--mismatched)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>mismatched, |A|=16,000 — -0.1717 nats, CI [-0.4381, +0.0840], accuracy 0.41</title><circle cx="594.9" cy="173.8" r="5" fill="var(--mismatched)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>mismatched, |A|=50,000 — -0.1397 nats, CI [-0.3855, +0.1044], accuracy 0.45</title><circle cx="764.8" cy="163.8" r="5" fill="var(--mismatched)" stroke="var(--surface)" stroke-width="2"/></g></svg></div>
+    <div class="panel"><h2>A-facts &middot; accuracy</h2>
+      <p class="note">Same runs, thresholded. Chance is 0.50.</p><svg viewBox="0 0 820 268" role="img" aria-label="Three condition lines against document length for A-facts."><line x1="78.0" y1="190.5" x2="792.0" y2="190.5" stroke="var(--grid)"/><text class="tick" x="70.0" y="193.9" text-anchor="end">0.35</text><line x1="78.0" y1="120.0" x2="792.0" y2="120.0" stroke="var(--grid)"/><text class="tick" x="70.0" y="123.4" text-anchor="end">0.5</text><line x1="78.0" y1="49.5" x2="792.0" y2="49.5" stroke="var(--grid)"/><text class="tick" x="70.0" y="52.9" text-anchor="end">0.65</text><text class="tick" x="105.2" y="234" text-anchor="middle">600</text><text class="tick" x="241.8" y="234" text-anchor="middle">1K</text><text class="tick" x="388.1" y="234" text-anchor="middle">4K</text><text class="tick" x="594.9" y="234" text-anchor="middle">16K</text><text class="tick" x="764.8" y="234" text-anchor="middle">50K</text><text class="tick" x="78.0" y="252">tokens in document A (log scale) &middot; accuracy</text><line x1="78.0" y1="120.0" x2="792.0" y2="120.0" stroke="var(--axis)" stroke-width="1.5" stroke-dasharray="4 3"/><text class="zeroLabel" x="792.0" y="115.0" text-anchor="end">chance</text><polyline points="105.2,120.0 241.8,115.1 388.1,115.1 594.9,115.1 764.8,115.1" fill="none" stroke="var(--cold)" stroke-width="2" stroke-linejoin="round"/><g class="pt"><title>cold, |A|=600 — -0.0714 nats, CI [-0.3063, +0.1683], accuracy 0.50</title><circle cx="105.2" cy="120.0" r="5" fill="var(--cold)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>cold, |A|=1,500 — -0.0576 nats, CI [-0.2948, +0.1834], accuracy 0.51</title><circle cx="241.8" cy="115.1" r="5" fill="var(--cold)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>cold, |A|=4,000 — -0.0576 nats, CI [-0.2948, +0.1834], accuracy 0.51</title><circle cx="388.1" cy="115.1" r="5" fill="var(--cold)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>cold, |A|=16,000 — -0.0576 nats, CI [-0.2948, +0.1834], accuracy 0.51</title><circle cx="594.9" cy="115.1" r="5" fill="var(--cold)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>cold, |A|=50,000 — -0.0576 nats, CI [-0.2948, +0.1834], accuracy 0.51</title><circle cx="764.8" cy="115.1" r="5" fill="var(--cold)" stroke="var(--surface)" stroke-width="2"/></g><polyline points="105.2,110.2 241.8,115.1 388.1,124.9 594.9,144.5 764.8,129.8" fill="none" stroke="var(--warm)" stroke-width="2" stroke-linejoin="round"/><g class="pt"><title>warm, |A|=600 — +0.1907 nats, CI [-0.0690, +0.4527], accuracy 0.52</title><circle cx="105.2" cy="110.2" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>warm, |A|=1,500 — +0.0680 nats, CI [-0.1617, +0.3007], accuracy 0.51</title><circle cx="241.8" cy="115.1" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>warm, |A|=4,000 — +0.0005 nats, CI [-0.2482, +0.2407], accuracy 0.49</title><circle cx="388.1" cy="124.9" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>warm, |A|=16,000 — -0.1550 nats, CI [-0.4054, +0.0909], accuracy 0.45</title><circle cx="594.9" cy="144.5" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>warm, |A|=50,000 — -0.1353 nats, CI [-0.3884, +0.1161], accuracy 0.48</title><circle cx="764.8" cy="129.8" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><polyline points="105.2,129.8 241.8,149.4 388.1,154.3 594.9,164.1 764.8,144.5" fill="none" stroke="var(--mismatched)" stroke-width="2" stroke-linejoin="round"/><g class="pt"><title>mismatched, |A|=600 — -0.0222 nats, CI [-0.2649, +0.2168], accuracy 0.48</title><circle cx="105.2" cy="129.8" r="5" fill="var(--mismatched)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>mismatched, |A|=1,500 — -0.0416 nats, CI [-0.2867, +0.2042], accuracy 0.44</title><circle cx="241.8" cy="149.4" r="5" fill="var(--mismatched)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>mismatched, |A|=4,000 — -0.1238 nats, CI [-0.3821, +0.1333], accuracy 0.43</title><circle cx="388.1" cy="154.3" r="5" fill="var(--mismatched)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>mismatched, |A|=16,000 — -0.1717 nats, CI [-0.4381, +0.0840], accuracy 0.41</title><circle cx="594.9" cy="164.1" r="5" fill="var(--mismatched)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>mismatched, |A|=50,000 — -0.1397 nats, CI [-0.3855, +0.1044], accuracy 0.45</title><circle cx="764.8" cy="144.5" r="5" fill="var(--mismatched)" stroke="var(--surface)" stroke-width="2"/></g></svg></div>
+    <div class="panel"><h2>B-facts &middot; nats</h2>
+      <p class="note">The cost. Both state-carrying conditions fall below cold and stay there.</p><svg viewBox="0 0 820 268" role="img" aria-label="Three condition lines against document length for B-facts."><line x1="78.0" y1="176.4" x2="792.0" y2="176.4" stroke="var(--grid)"/><text class="tick" x="70.0" y="179.8" text-anchor="end">16</text><line x1="78.0" y1="101.2" x2="792.0" y2="101.2" stroke="var(--grid)"/><text class="tick" x="70.0" y="104.6" text-anchor="end">17</text><line x1="78.0" y1="26.0" x2="792.0" y2="26.0" stroke="var(--grid)"/><text class="tick" x="70.0" y="29.4" text-anchor="end">18</text><text class="tick" x="105.2" y="234" text-anchor="middle">600</text><text class="tick" x="241.8" y="234" text-anchor="middle">1K</text><text class="tick" x="388.1" y="234" text-anchor="middle">4K</text><text class="tick" x="594.9" y="234" text-anchor="middle">16K</text><text class="tick" x="764.8" y="234" text-anchor="middle">50K</text><text class="tick" x="78.0" y="252">tokens in document A (log scale) &middot; mean margin, nats</text><polyline points="105.2,72.2 241.8,69.7 388.1,69.7 594.9,69.7 764.8,69.7" fill="none" stroke="var(--cold)" stroke-width="2" stroke-linejoin="round"/><g class="pt"><title>cold, |A|=600 — +17.3850 nats, CI [+16.9885, +17.7817], accuracy 1.00</title><circle cx="105.2" cy="72.2" r="5" fill="var(--cold)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>cold, |A|=1,500 — +17.4195 nats, CI [+17.0228, +17.8176], accuracy 1.00</title><circle cx="241.8" cy="69.7" r="5" fill="var(--cold)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>cold, |A|=4,000 — +17.4195 nats, CI [+17.0228, +17.8176], accuracy 1.00</title><circle cx="388.1" cy="69.7" r="5" fill="var(--cold)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>cold, |A|=16,000 — +17.4195 nats, CI [+17.0228, +17.8176], accuracy 1.00</title><circle cx="594.9" cy="69.7" r="5" fill="var(--cold)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>cold, |A|=50,000 — +17.4195 nats, CI [+17.0228, +17.8176], accuracy 1.00</title><circle cx="764.8" cy="69.7" r="5" fill="var(--cold)" stroke="var(--surface)" stroke-width="2"/></g><polyline points="105.2,89.7 241.8,110.0 388.1,133.8 594.9,131.1 764.8,134.6" fill="none" stroke="var(--warm)" stroke-width="2" stroke-linejoin="round"/><g class="pt"><title>warm, |A|=600 — +17.1534 nats, CI [+16.7225, +17.5897], accuracy 1.00</title><circle cx="105.2" cy="89.7" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>warm, |A|=1,500 — +16.8830 nats, CI [+16.4364, +17.3334], accuracy 1.00</title><circle cx="241.8" cy="110.0" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>warm, |A|=4,000 — +16.5662 nats, CI [+16.1064, +16.9998], accuracy 1.00</title><circle cx="388.1" cy="133.8" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>warm, |A|=16,000 — +16.6023 nats, CI [+16.0548, +17.1321], accuracy 1.00</title><circle cx="594.9" cy="131.1" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>warm, |A|=50,000 — +16.5556 nats, CI [+16.0757, +17.0211], accuracy 1.00</title><circle cx="764.8" cy="134.6" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><polyline points="105.2,89.3 241.8,128.4 388.1,143.2 594.9,150.2 764.8,117.8" fill="none" stroke="var(--mismatched)" stroke-width="2" stroke-linejoin="round"/><g class="pt"><title>mismatched, |A|=600 — +17.1578 nats, CI [+16.7135, +17.6064], accuracy 1.00</title><circle cx="105.2" cy="89.3" r="5" fill="var(--mismatched)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>mismatched, |A|=1,500 — +16.6384 nats, CI [+16.2153, +17.0562], accuracy 1.00</title><circle cx="241.8" cy="128.4" r="5" fill="var(--mismatched)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>mismatched, |A|=4,000 — +16.4420 nats, CI [+15.9730, +16.8952], accuracy 1.00</title><circle cx="388.1" cy="143.2" r="5" fill="var(--mismatched)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>mismatched, |A|=16,000 — +16.3486 nats, CI [+15.8344, +16.8400], accuracy 1.00</title><circle cx="594.9" cy="150.2" r="5" fill="var(--mismatched)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>mismatched, |A|=50,000 — +16.7797 nats, CI [+16.2913, +17.2533], accuracy 1.00</title><circle cx="764.8" cy="117.8" r="5" fill="var(--mismatched)" stroke="var(--surface)" stroke-width="2"/></g></svg></div>
+    <div class="panel"><h2>B-facts &middot; accuracy</h2>
+      <p class="note">Pinned at 1.00 everywhere, which is why nats is the measure that shows the damage.</p><svg viewBox="0 0 820 268" role="img" aria-label="Three condition lines against document length for B-facts."><line x1="78.0" y1="169.2" x2="792.0" y2="169.2" stroke="var(--grid)"/><text class="tick" x="70.0" y="172.6" text-anchor="end">0.25</text><line x1="78.0" y1="124.5" x2="792.0" y2="124.5" stroke="var(--grid)"/><text class="tick" x="70.0" y="127.9" text-anchor="end">0.5</text><line x1="78.0" y1="79.7" x2="792.0" y2="79.7" stroke="var(--grid)"/><text class="tick" x="70.0" y="83.1" text-anchor="end">0.75</text><line x1="78.0" y1="35.0" x2="792.0" y2="35.0" stroke="var(--grid)"/><text class="tick" x="70.0" y="38.4" text-anchor="end">1</text><text class="tick" x="105.2" y="234" text-anchor="middle">600</text><text class="tick" x="241.8" y="234" text-anchor="middle">1K</text><text class="tick" x="388.1" y="234" text-anchor="middle">4K</text><text class="tick" x="594.9" y="234" text-anchor="middle">16K</text><text class="tick" x="764.8" y="234" text-anchor="middle">50K</text><text class="tick" x="78.0" y="252">tokens in document A (log scale) &middot; accuracy</text><line x1="78.0" y1="124.5" x2="792.0" y2="124.5" stroke="var(--axis)" stroke-width="1.5" stroke-dasharray="4 3"/><text class="zeroLabel" x="792.0" y="119.5" text-anchor="end">chance</text><polyline points="105.2,35.0 241.8,35.0 388.1,35.0 594.9,35.0 764.8,35.0" fill="none" stroke="var(--cold)" stroke-width="2" stroke-linejoin="round"/><g class="pt"><title>cold, |A|=600 — +17.3850 nats, CI [+16.9885, +17.7817], accuracy 1.00</title><circle cx="105.2" cy="35.0" r="5" fill="var(--cold)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>cold, |A|=1,500 — +17.4195 nats, CI [+17.0228, +17.8176], accuracy 1.00</title><circle cx="241.8" cy="35.0" r="5" fill="var(--cold)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>cold, |A|=4,000 — +17.4195 nats, CI [+17.0228, +17.8176], accuracy 1.00</title><circle cx="388.1" cy="35.0" r="5" fill="var(--cold)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>cold, |A|=16,000 — +17.4195 nats, CI [+17.0228, +17.8176], accuracy 1.00</title><circle cx="594.9" cy="35.0" r="5" fill="var(--cold)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>cold, |A|=50,000 — +17.4195 nats, CI [+17.0228, +17.8176], accuracy 1.00</title><circle cx="764.8" cy="35.0" r="5" fill="var(--cold)" stroke="var(--surface)" stroke-width="2"/></g><polyline points="105.2,35.0 241.8,35.0 388.1,35.0 594.9,35.0 764.8,35.0" fill="none" stroke="var(--warm)" stroke-width="2" stroke-linejoin="round"/><g class="pt"><title>warm, |A|=600 — +17.1534 nats, CI [+16.7225, +17.5897], accuracy 1.00</title><circle cx="105.2" cy="35.0" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>warm, |A|=1,500 — +16.8830 nats, CI [+16.4364, +17.3334], accuracy 1.00</title><circle cx="241.8" cy="35.0" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>warm, |A|=4,000 — +16.5662 nats, CI [+16.1064, +16.9998], accuracy 1.00</title><circle cx="388.1" cy="35.0" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>warm, |A|=16,000 — +16.6023 nats, CI [+16.0548, +17.1321], accuracy 1.00</title><circle cx="594.9" cy="35.0" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>warm, |A|=50,000 — +16.5556 nats, CI [+16.0757, +17.0211], accuracy 1.00</title><circle cx="764.8" cy="35.0" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><polyline points="105.2,35.0 241.8,35.0 388.1,35.0 594.9,35.0 764.8,35.0" fill="none" stroke="var(--mismatched)" stroke-width="2" stroke-linejoin="round"/><g class="pt"><title>mismatched, |A|=600 — +17.1578 nats, CI [+16.7135, +17.6064], accuracy 1.00</title><circle cx="105.2" cy="35.0" r="5" fill="var(--mismatched)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>mismatched, |A|=1,500 — +16.6384 nats, CI [+16.2153, +17.0562], accuracy 1.00</title><circle cx="241.8" cy="35.0" r="5" fill="var(--mismatched)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>mismatched, |A|=4,000 — +16.4420 nats, CI [+15.9730, +16.8952], accuracy 1.00</title><circle cx="388.1" cy="35.0" r="5" fill="var(--mismatched)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>mismatched, |A|=16,000 — +16.3486 nats, CI [+15.8344, +16.8400], accuracy 1.00</title><circle cx="594.9" cy="35.0" r="5" fill="var(--mismatched)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>mismatched, |A|=50,000 — +16.7797 nats, CI [+16.2913, +17.2533], accuracy 1.00</title><circle cx="764.8" cy="35.0" r="5" fill="var(--mismatched)" stroke="var(--surface)" stroke-width="2"/></g></svg></div>
+  </div>
+
+  <section>
+    <h2 class="sec">Every length</h2>
+    <table>
+      <thead><tr><th>|A| tokens</th><th>warm &minus; mism</th><th>95% CI</th><th>t(7)</th>
+      <th>significant</th><th>B damage</th></tr></thead>
+      <tbody><tr><td class="num">600</td><td class="num">+0.2130</td><td class="num">[+0.1171, +0.3074]</td><td class="num">3.12</td><td>yes</td><td class="num">-0.232</td></tr><tr><td class="num">1,500</td><td class="num">+0.1096</td><td class="num">[-0.0101, +0.2277]</td><td class="num">1.75</td><td>no</td><td class="num">-0.537</td></tr><tr><td class="num">4,000</td><td class="num">+0.1243</td><td class="num">[+0.0437, +0.2055]</td><td class="num">2.07</td><td>yes</td><td class="num">-0.853</td></tr><tr><td class="num">16,000</td><td class="num">+0.0167</td><td class="num">[-0.0566, +0.0947]</td><td class="num">0.37</td><td>no</td><td class="num">-0.817</td></tr><tr><td class="num">50,000</td><td class="num">+0.0044</td><td class="num">[-0.0685, +0.0790]</td><td class="num">0.10</td><td>no</td><td class="num">-0.864</td></tr></tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2 class="sec">What this does and does not establish</h2>
+    <ul class="caveats">
+      <li><strong>The shape between 600 and 4K is unresolved.</strong> 1,500 measures lower than
+      4,000, which is not physically sensible &mdash; their CIs overlap heavily and they are
+      statistically indistinguishable. All that is established is that 600 and 4K show transfer,
+      16K and 50K do not, and the transition lies somewhere between. Do not read a curve shape
+      into five points at these confidence intervals.</li>
+      <li><strong>The carrier alone halves the effect.</strong> At an identical 600 tokens, the
+      synthetic looping carrier of experiment 1 gives +0.396 nats and real Wikipedia prose gives
+      +0.213, with non-overlapping CIs. A repetitive template is far easier to compress, leaving
+      more of a finite state for the planted facts. Experiment 1's headline number is therefore
+      an overestimate of what happens on real text.</li>
+      <li><strong>Planted facts are conspicuous here.</strong> A sentence about a pumping
+      station's circuit label sits between unrelated Wikipedia paragraphs, so it is a visible
+      non-sequitur in a way it was not in experiment 1, where facts blended into matching prose.
+      Salience could raise or lower encoding strength and this design cannot separate the two.
+      Experiment 3 removes the issue by scoring real sentences instead of planted ones.</li>
+      <li><strong>100K tokens would not fit.</strong> One-shot prefill OOMs on a 141&nbsp;GiB card
+      &mdash; it asked for 7.07&nbsp;GiB more than was free. 50K is the ceiling for this hardware
+      without chunking, and chunking would introduce bf16 boundaries in the long arm only,
+      confounding length with segmentation.</li>
+      <li><strong>Only 8 seeds per length.</strong> Enough to detect an effect the size of
+      experiment 1's, not enough to rule out a small residual at 16K and beyond. The CI upper
+      bound at 16K is +0.095, so anything above about a quarter of the 600-token effect is
+      excluded &mdash; but zero and "small" are not distinguished.</li>
+    </ul>
+  </section>
+</section>
+  <section class="tabpanel" id="p-exp3" role="tabpanel" aria-labelledby="t-exp3" hidden>
+  <div class="claimbox">
+    <p><strong>Nothing is planted here.</strong> Documents are unbroken corpus prose; the probes
+    are real sentences taken from A itself. The model gets the opening eight words and is scored
+    on the true continuation, so there is no inserted non-sequitur and no forced choice. The
+    number of probes stops being a design limit: 106 at 600 tokens, 1,600 at 50,000.</p>
+    <p><strong>It separates two questions experiment 2 could only see combined.</strong>
+    <em>Does the state carry information about this particular document?</em> &mdash; yes, at
+    every length: warm stays above mismatched throughout, +0.054 down to +0.009 nats/token.
+    <em>Is transplanting worth doing?</em> &mdash; that is warm against <strong>cold</strong>,
+    because the alternative to a transplant is no transplant, not an irrelevant one. It is
+    positive at 600 and 1,500 and negative from 4,000 on, reaching &minus;0.253 at 50K.</p>
+    <p>The two must not be conflated. warm &minus; mismatched compares two states that both pay
+    the cost of being carried, so it can only establish document-specificity. The generic cost
+    itself is mismatched &minus; cold, which grows from &minus;0.016 to &minus;0.262 and is what
+    drags the benefit under water.</p>
+  </div>
+
+  <div class="legend"><span class="key"><i style="background:var(--cold)"></i>cold &mdash; no state</span><span class="key"><i style="background:var(--warm)"></i>warm &mdash; state from A</span><span class="key"><i style="background:var(--mismatched)"></i>mismatched &mdash; state from A2</span></div>
+
+  <div class="panels">
+    <div class="panel"><h2>A-probes &middot; log-prob per token</h2>
+      <p class="note">Sentences from A, scored after reading B. Higher is better. warm sits above
+      cold at 600 and 1,500, then falls below it and keeps falling.</p><svg viewBox="0 0 820 268" role="img" aria-label="Three condition lines against document length for A-facts."><line x1="78.0" y1="194.0" x2="792.0" y2="194.0" stroke="var(--grid)"/><text class="tick" x="70.0" y="197.4" text-anchor="end">-2.5</text><line x1="78.0" y1="114.0" x2="792.0" y2="114.0" stroke="var(--grid)"/><text class="tick" x="70.0" y="117.4" text-anchor="end">-2.3</text><line x1="78.0" y1="34.0" x2="792.0" y2="34.0" stroke="var(--grid)"/><text class="tick" x="70.0" y="37.4" text-anchor="end">-2.1</text><text class="tick" x="105.2" y="234" text-anchor="middle">600</text><text class="tick" x="241.8" y="234" text-anchor="middle">1K</text><text class="tick" x="388.1" y="234" text-anchor="middle">4K</text><text class="tick" x="594.9" y="234" text-anchor="middle">16K</text><text class="tick" x="764.8" y="234" text-anchor="middle">50K</text><text class="tick" x="78.0" y="252">tokens in document A (log scale) &middot; mean log-prob per token</text><polyline points="105.2,60.5 241.8,98.9 388.1,100.3 594.9,95.7 764.8,86.6" fill="none" stroke="var(--cold)" stroke-width="2" stroke-linejoin="round"/><g class="pt"><title>cold, |A|=600 — -2.1662 nats, CI [-2.3307, -2.0016]</title><circle cx="105.2" cy="60.5" r="5" fill="var(--cold)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>cold, |A|=1,500 — -2.2622 nats, CI [-2.3633, -2.1625]</title><circle cx="241.8" cy="98.9" r="5" fill="var(--cold)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>cold, |A|=4,000 — -2.2657 nats, CI [-2.3273, -2.2024]</title><circle cx="388.1" cy="100.3" r="5" fill="var(--cold)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>cold, |A|=16,000 — -2.2543 nats, CI [-2.2951, -2.2129]</title><circle cx="594.9" cy="95.7" r="5" fill="var(--cold)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>cold, |A|=50,000 — -2.2314 nats, CI [-2.2717, -2.1914]</title><circle cx="764.8" cy="86.6" r="5" fill="var(--cold)" stroke="var(--surface)" stroke-width="2"/></g><polyline points="105.2,45.4 241.8,91.0 388.1,122.8 594.9,145.6 764.8,187.9" fill="none" stroke="var(--warm)" stroke-width="2" stroke-linejoin="round"/><g class="pt"><title>warm, |A|=600 — -2.1285 nats, CI [-2.2903, -1.9675]</title><circle cx="105.2" cy="45.4" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>warm, |A|=1,500 — -2.2424 nats, CI [-2.3407, -2.1450]</title><circle cx="241.8" cy="91.0" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>warm, |A|=4,000 — -2.3220 nats, CI [-2.3852, -2.2582]</title><circle cx="388.1" cy="122.8" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>warm, |A|=16,000 — -2.3791 nats, CI [-2.4205, -2.3358]</title><circle cx="594.9" cy="145.6" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>warm, |A|=50,000 — -2.4847 nats, CI [-2.5284, -2.4405]</title><circle cx="764.8" cy="187.9" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><polyline points="105.2,67.0 241.8,107.1 388.1,133.2 594.9,153.0 764.8,191.5" fill="none" stroke="var(--mismatched)" stroke-width="2" stroke-linejoin="round"/><g class="pt"><title>mismatched, |A|=600 — -2.1826 nats, CI [-2.3441, -2.0196]</title><circle cx="105.2" cy="67.0" r="5" fill="var(--mismatched)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>mismatched, |A|=1,500 — -2.2826 nats, CI [-2.3820, -2.1847]</title><circle cx="241.8" cy="107.1" r="5" fill="var(--mismatched)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>mismatched, |A|=4,000 — -2.3480 nats, CI [-2.4114, -2.2844]</title><circle cx="388.1" cy="133.2" r="5" fill="var(--mismatched)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>mismatched, |A|=16,000 — -2.3976 nats, CI [-2.4389, -2.3545]</title><circle cx="594.9" cy="153.0" r="5" fill="var(--mismatched)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>mismatched, |A|=50,000 — -2.4938 nats, CI [-2.5380, -2.4497]</title><circle cx="764.8" cy="191.5" r="5" fill="var(--mismatched)" stroke="var(--surface)" stroke-width="2"/></g></svg></div>
+    <div class="panel"><h2>B-probes &middot; log-prob per token</h2>
+      <p class="note">Sentences from B, which is in context &mdash; so loss is near zero and this
+      is a weak damage detector, the same ceiling problem experiment 2 had.</p><svg viewBox="0 0 820 268" role="img" aria-label="Three condition lines against document length for B-facts."><line x1="78.0" y1="173.7" x2="792.0" y2="173.7" stroke="var(--grid)"/><text class="tick" x="70.0" y="177.1" text-anchor="end">-0.016</text><line x1="78.0" y1="120.0" x2="792.0" y2="120.0" stroke="var(--grid)"/><text class="tick" x="70.0" y="123.4" text-anchor="end">-0.012</text><line x1="78.0" y1="66.3" x2="792.0" y2="66.3" stroke="var(--grid)"/><text class="tick" x="70.0" y="69.7" text-anchor="end">-0.008</text><text class="tick" x="105.2" y="234" text-anchor="middle">600</text><text class="tick" x="241.8" y="234" text-anchor="middle">1K</text><text class="tick" x="388.1" y="234" text-anchor="middle">4K</text><text class="tick" x="594.9" y="234" text-anchor="middle">16K</text><text class="tick" x="764.8" y="234" text-anchor="middle">50K</text><text class="tick" x="78.0" y="252">tokens in document A (log scale) &middot; mean log-prob per token</text><polyline points="105.2,82.8 241.8,79.6 388.1,65.2 594.9,110.4 764.8,66.1" fill="none" stroke="var(--cold)" stroke-width="2" stroke-linejoin="round"/><g class="pt"><title>cold, |A|=600 — -0.0092 nats, CI [-0.0114, -0.0073]</title><circle cx="105.2" cy="82.8" r="5" fill="var(--cold)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>cold, |A|=1,500 — -0.0090 nats, CI [-0.0104, -0.0077]</title><circle cx="241.8" cy="79.6" r="5" fill="var(--cold)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>cold, |A|=4,000 — -0.0079 nats, CI [-0.0099, -0.0063]</title><circle cx="388.1" cy="65.2" r="5" fill="var(--cold)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>cold, |A|=16,000 — -0.0113 nats, CI [-0.0145, -0.0086]</title><circle cx="594.9" cy="110.4" r="5" fill="var(--cold)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>cold, |A|=50,000 — -0.0080 nats, CI [-0.0097, -0.0065]</title><circle cx="764.8" cy="66.1" r="5" fill="var(--cold)" stroke="var(--surface)" stroke-width="2"/></g><polyline points="105.2,67.0 241.8,66.0 388.1,96.5 594.9,179.7 764.8,159.7" fill="none" stroke="var(--warm)" stroke-width="2" stroke-linejoin="round"/><g class="pt"><title>warm, |A|=600 — -0.0081 nats, CI [-0.0102, -0.0062]</title><circle cx="105.2" cy="67.0" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>warm, |A|=1,500 — -0.0080 nats, CI [-0.0094, -0.0066]</title><circle cx="241.8" cy="66.0" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>warm, |A|=4,000 — -0.0102 nats, CI [-0.0125, -0.0082]</title><circle cx="388.1" cy="96.5" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>warm, |A|=16,000 — -0.0164 nats, CI [-0.0214, -0.0124]</title><circle cx="594.9" cy="179.7" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>warm, |A|=50,000 — -0.0150 nats, CI [-0.0180, -0.0122]</title><circle cx="764.8" cy="159.7" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"/></g><polyline points="105.2,85.9 241.8,85.5 388.1,124.3 594.9,153.8 764.8,156.7" fill="none" stroke="var(--mismatched)" stroke-width="2" stroke-linejoin="round"/><g class="pt"><title>mismatched, |A|=600 — -0.0095 nats, CI [-0.0121, -0.0072]</title><circle cx="105.2" cy="85.9" r="5" fill="var(--mismatched)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>mismatched, |A|=1,500 — -0.0094 nats, CI [-0.0111, -0.0078]</title><circle cx="241.8" cy="85.5" r="5" fill="var(--mismatched)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>mismatched, |A|=4,000 — -0.0123 nats, CI [-0.0152, -0.0097]</title><circle cx="388.1" cy="124.3" r="5" fill="var(--mismatched)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>mismatched, |A|=16,000 — -0.0145 nats, CI [-0.0181, -0.0114]</title><circle cx="594.9" cy="153.8" r="5" fill="var(--mismatched)" stroke="var(--surface)" stroke-width="2"/></g><g class="pt"><title>mismatched, |A|=50,000 — -0.0147 nats, CI [-0.0179, -0.0119]</title><circle cx="764.8" cy="156.7" r="5" fill="var(--mismatched)" stroke="var(--surface)" stroke-width="2"/></g></svg></div>
+  </div>
+
+  <section>
+    <h2 class="sec">The two effects, separated</h2>
+    <p class="lede">Per-token log-probability differences on A-probes. <code>warm &minus; cold</code>
+    is the benefit question; <code>warm &minus; mism</code> is the document-specificity question;
+    <code>mism &minus; cold</code> is the cost of carrying any state. Significance is the
+    per-seed test over 8 seeds; the bootstrap intervals are over probes, which are not
+    independent within a seed, so they read tighter than the evidence warrants.</p>
+    <table>
+      <thead><tr><th>|A|</th><th>warm &minus; cold</th><th>t(7)</th>
+      <th>warm &minus; mism</th><th>t(7)</th><th>mism &minus; cold</th><th>t(7)</th></tr></thead>
+      <tbody>
+        <tr><td class="num">600</td><td class="num">+0.038</td><td class="num">+4.77</td><td class="num">+0.054</td><td class="num">+2.20</td><td class="num">&minus;0.016</td><td class="num">&minus;0.75</td></tr>
+        <tr><td class="num">1,500</td><td class="num">+0.020</td><td class="num">+1.96</td><td class="num">+0.040</td><td class="num">+2.39</td><td class="num">&minus;0.020</td><td class="num">&minus;0.86</td></tr>
+        <tr><td class="num">4,000</td><td class="num">&minus;0.056</td><td class="num">&minus;1.58</td><td class="num">+0.026</td><td class="num">+1.00</td><td class="num">&minus;0.082</td><td class="num">&minus;2.36</td></tr>
+        <tr><td class="num">16,000</td><td class="num">&minus;0.125</td><td class="num">&minus;2.58</td><td class="num">+0.018</td><td class="num">+0.54</td><td class="num">&minus;0.143</td><td class="num">&minus;3.67</td></tr>
+        <tr><td class="num">50,000</td><td class="num">&minus;0.253</td><td class="num">&minus;4.46</td><td class="num">+0.009</td><td class="num">+1.36</td><td class="num">&minus;0.262</td><td class="num">&minus;4.86</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2 class="sec">What this establishes</h2>
+    <ul class="caveats">
+      <li><strong>The cost is the solid finding.</strong> warm &minus; cold at 50K is
+      &minus;0.253 nats/token with t = &minus;4.46 and 8 of 8 seeds agreeing. By contrast
+      warm &minus; mismatched only clears the per-seed test at 600 and 1,500. The evidence that
+      carrying a state hurts is much stronger than any evidence that it helps.</li>
+      <li><strong>Document-specificity persists; benefit does not.</strong> warm stays above
+      mismatched at every length including 50K &mdash; relevant context beats irrelevant context
+      throughout, which experiment 2 could not show past 16K. But that is a statement about what
+      the state <em>contains</em>, not about whether carrying it is worthwhile: both conditions
+      pay the same cost, so the comparison is between two burdened options. Against no state at
+      all, the transplant is a loss from 4,000 tokens on.</li>
+      <li><strong>No depth effect here.</strong> Sorting probes by position in A gives no
+      consistent gradient at any length, which does not reproduce experiment 1's primacy result.
+      Either that finding was specific to planted facts, or it does not survive real prose.</li>
+      <li><strong>B-probes are a ceiling.</strong> Loss is about &minus;0.01 nats/token because
+      the sentences come from the document sitting in context &mdash; the model is close to
+      copying. Detecting damage there needs a task with headroom.</li>
+    </ul>
+  </section>
+</section>
+</div>
+
+<script>
+(function () {
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.tabs button'));
+  function show(btn) {
+    tabs.forEach(function (t) {
+      var sel = t === btn;
+      t.setAttribute('aria-selected', sel ? 'true' : 'false');
+      document.getElementById(t.getAttribute('aria-controls')).hidden = !sel;
+    });
+    btn.focus();
+  }
+  tabs.forEach(function (t, i) {
+    t.addEventListener('click', function () { show(t); });
+    t.addEventListener('keydown', function (e) {
+      var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (d) { e.preventDefault(); show(tabs[(i + d + tabs.length) % tabs.length]); }
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

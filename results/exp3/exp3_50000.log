@@ -1,0 +1,30 @@
+[load] tokenizer + config
+Current Triton version 3.2.0 is below the recommended 3.3.0 version. Errors may occur and these issues will not be fixed. Please consider upgrading Triton.
+Current Python version 3.10 is below the recommended 3.11 version. It is recommended to upgrade to Python 3.11 or higher for the best experience.
+🚨 `generation_mode` is part of KimiLinearForCausalLM.forward's signature, but not documented. Make sure to add it to the docstring of the function in /root/.cache/huggingface/modules/transformers_modules/moonshotai/Kimi_hyphen_Linear_hyphen_48B_hyphen_A3B_hyphen_Base/3b171c17bfc4ee348599b6781a2ca8715c21c8dc/modeling_kimi.py.
+  patched fused_kda_gate (API skew); all other kernels are real Triton
+[load] weights (~96 GB) -> cuda
+Ignoring the provided attention implementation eager
+Using flash_attention_2 backend instead.
+Loading checkpoint shards:   0%|          | 0/20 [00:00<?, ?it/s]Loading checkpoint shards:   5%|▌         | 1/20 [00:00<00:07,  2.39it/s]Loading checkpoint shards:  10%|█         | 2/20 [00:00<00:07,  2.44it/s]Loading checkpoint shards:  15%|█▌        | 3/20 [00:01<00:06,  2.46it/s]Loading checkpoint shards:  20%|██        | 4/20 [00:01<00:06,  2.47it/s]Loading checkpoint shards:  25%|██▌       | 5/20 [00:02<00:06,  2.47it/s]Loading checkpoint shards:  30%|███       | 6/20 [00:02<00:05,  2.49it/s]Loading checkpoint shards:  35%|███▌      | 7/20 [00:02<00:05,  2.49it/s]Loading checkpoint shards:  40%|████      | 8/20 [00:03<00:04,  2.49it/s]Loading checkpoint shards:  45%|████▌     | 9/20 [00:03<00:04,  2.50it/s]Loading checkpoint shards:  50%|█████     | 10/20 [00:03<00:03,  2.61it/s]Loading checkpoint shards:  55%|█████▌    | 11/20 [00:04<00:03,  2.58it/s]Loading checkpoint shards:  60%|██████    | 12/20 [00:04<00:03,  2.56it/s]Loading checkpoint shards:  65%|██████▌   | 13/20 [00:05<00:02,  2.65it/s]Loading checkpoint shards:  70%|███████   | 14/20 [00:05<00:02,  2.60it/s]Loading checkpoint shards:  75%|███████▌  | 15/20 [00:05<00:01,  2.57it/s]Loading checkpoint shards:  80%|████████  | 16/20 [00:06<00:01,  2.66it/s]Loading checkpoint shards:  85%|████████▌ | 17/20 [00:06<00:01,  2.61it/s]Loading checkpoint shards:  90%|█████████ | 18/20 [00:07<00:00,  2.58it/s]Loading checkpoint shards:  95%|█████████▌| 19/20 [00:07<00:00,  2.66it/s]Loading checkpoint shards: 100%|██████████| 20/20 [00:07<00:00,  3.03it/s]Loading checkpoint shards: 100%|██████████| 20/20 [00:07<00:00,  2.62it/s]
+  loaded. cuda mem: 91.5 GiB
+seed 0: n=200 probes | warm-mism = -0.01281 nats/token | B damage = -0.00212
+seed 1: n=200 probes | warm-mism = +0.00069 nats/token | B damage = -0.00831
+seed 2: n=200 probes | warm-mism = +0.04782 nats/token | B damage = -0.00909
+seed 3: n=200 probes | warm-mism = +0.00641 nats/token | B damage = -0.00058
+seed 4: n=200 probes | warm-mism = -0.00937 nats/token | B damage = -0.01731
+seed 5: n=200 probes | warm-mism = +0.01697 nats/token | B damage = -0.00678
+seed 6: n=200 probes | warm-mism = +0.00611 nats/token | B damage = -0.00788
+seed 7: n=200 probes | warm-mism = +0.01746 nats/token | B damage = -0.00713
+
+=== |A| = 50000 tokens, 8 seeds, 1600 probes ===
+warm - mismatched : +0.00916 nats/token   95% CI [+0.00528, +0.01304]   t(7) = 1.36
+                    859/1600 probes positive, 6/8 seeds
+
+depth profile (warm - mismatched by position in A):
+  depth 0.00-0.33  n= 543  mean = +0.00535
+  depth 0.33-0.67  n= 527  mean = +0.00725
+  depth 0.67-1.01  n= 530  mean = +0.01496
+
+wrote exp3_per_item_50000.csv (5181 rows)
+VERDICT: transfer detected (CI excludes 0)

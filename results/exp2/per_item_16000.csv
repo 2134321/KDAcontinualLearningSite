@@ -1,0 +1,577 @@
+seed,condition,facts,item,depth,stem,correct,wrong,margin
+0,cold,A,0,0.0,The quartermaster's tally sheet uses form number,NP15,PB22,-2.1961092948913574
+0,cold,A,1,0.0909,The diesel storage tank is stencilled vessel number,JS72,BU91,0.2152690887451172
+0,cold,A,2,0.1818,The harbour pilot's licence shows registration code,NK71,TV97,1.2488651275634766
+0,cold,A,3,0.2727,The eastern pumping station runs on circuit label,MU37,CA25,-0.21859455108642578
+0,cold,A,4,0.3636,The radio operator's logbook continues in volume,SE46,WG87,1.206265926361084
+0,cold,A,5,0.4545,The survey team's theodolite bears serial number,ED89,UD60,1.6477866172790527
+0,cold,A,6,0.5455,The seismograph at Ridge Camp reports as instrument,JT87,CM24,0.042618751525878906
+0,cold,A,7,0.6364,The winter quarters roof panel came from batch,LR81,BV12,-0.11351394653320312
+0,cold,A,8,0.7273,The customs declaration quotes reference code,DM65,GF25,0.6631741523742676
+0,cold,A,9,0.8182,The reserve fuel depot is listed at site code,LV91,RG17,0.47623491287231445
+0,cold,A,10,0.9091,The ice core drilling rig was delivered as unit,GT71,PV22,-0.002353668212890625
+0,cold,A,11,1.0,The mail packet from Vlissen came in pouch number,QS43,JC38,-0.248992919921875
+0,cold,B,0,0.0,The freight siding at Kelder appears on the plan as track,BT11,CW48,19.72464865888469
+0,cold,B,1,0.0909,The auxiliary generator was tagged asset number,AV73,MP33,17.602173178223893
+0,cold,B,2,0.1818,Feld's field notebook carries catalogue reference,LH51,BS69,19.629269749158993
+0,cold,B,3,0.2727,Ansel's transit permit was issued as document number,ET67,BV22,18.33549996383954
+0,cold,B,4,0.3636,The winter supply manifest lists lot number,CC50,JM70,18.33407624764368
+0,cold,B,5,0.4545,The medical supply locker was closed with seal number,SR23,UF99,19.202106077224016
+0,cold,B,6,0.5455,The archive microfilm reel is filed under shelf mark,KT47,LS42,16.710833358112723
+0,cold,B,7,0.6364,The meteorological buoy broadcasts on transponder code,LT36,DV66,17.9811335101258
+0,cold,B,8,0.7273,The observatory's spare mirror was ordered as part number,VT85,RX62,18.98954109137412
+0,cold,B,9,0.8182,The lighthouse relief roster follows schedule,FG33,US49,19.788349573791493
+0,cold,B,10,0.9091,The northern relay station operates under callsign,BV94,WM59,21.534655735478736
+0,cold,B,11,1.0,The telegraph repeater hut answers to station code,JR18,TY11,18.72992014477495
+0,warm,A,0,0.0,The quartermaster's tally sheet uses form number,NP15,PB22,-1.5998635292053223
+0,warm,A,1,0.0909,The diesel storage tank is stencilled vessel number,JS72,BU91,-0.5885863304138184
+0,warm,A,2,0.1818,The harbour pilot's licence shows registration code,NK71,TV97,0.5232448577880859
+0,warm,A,3,0.2727,The eastern pumping station runs on circuit label,MU37,CA25,-0.5010757446289062
+0,warm,A,4,0.3636,The radio operator's logbook continues in volume,SE46,WG87,0.5383672714233398
+0,warm,A,5,0.4545,The survey team's theodolite bears serial number,ED89,UD60,0.8226547241210938
+0,warm,A,6,0.5455,The seismograph at Ridge Camp reports as instrument,JT87,CM24,0.22713327407836914
+0,warm,A,7,0.6364,The winter quarters roof panel came from batch,LR81,BV12,-0.5246186256408691
+0,warm,A,8,0.7273,The customs declaration quotes reference code,DM65,GF25,0.2988243103027344
+0,warm,A,9,0.8182,The reserve fuel depot is listed at site code,LV91,RG17,-0.36151695251464844
+0,warm,A,10,0.9091,The ice core drilling rig was delivered as unit,GT71,PV22,0.6986360549926758
+0,warm,A,11,1.0,The mail packet from Vlissen came in pouch number,QS43,JC38,-0.8875331878662109
+0,warm,B,0,0.0,The freight siding at Kelder appears on the plan as track,BT11,CW48,20.54557189764455
+0,warm,B,1,0.0909,The auxiliary generator was tagged asset number,AV73,MP33,15.449262510985136
+0,warm,B,2,0.1818,Feld's field notebook carries catalogue reference,LH51,BS69,15.512275658547878
+0,warm,B,3,0.2727,Ansel's transit permit was issued as document number,ET67,BV22,17.369066749932244
+0,warm,B,4,0.3636,The winter supply manifest lists lot number,CC50,JM70,17.94875520147616
+0,warm,B,5,0.4545,The medical supply locker was closed with seal number,SR23,UF99,19.389623172348365
+0,warm,B,6,0.5455,The archive microfilm reel is filed under shelf mark,KT47,LS42,16.199206947814673
+0,warm,B,7,0.6364,The meteorological buoy broadcasts on transponder code,LT36,DV66,15.190963331377134
+0,warm,B,8,0.7273,The observatory's spare mirror was ordered as part number,VT85,RX62,18.57266593782697
+0,warm,B,9,0.8182,The lighthouse relief roster follows schedule,FG33,US49,18.60989420430269
+0,warm,B,10,0.9091,The northern relay station operates under callsign,BV94,WM59,21.320005249930546
+0,warm,B,11,1.0,The telegraph repeater hut answers to station code,JR18,TY11,17.645265200641006
+0,mismatched,A,0,0.0,The quartermaster's tally sheet uses form number,NP15,PB22,-1.5344858169555664
+0,mismatched,A,1,0.0909,The diesel storage tank is stencilled vessel number,JS72,BU91,-0.27847909927368164
+0,mismatched,A,2,0.1818,The harbour pilot's licence shows registration code,NK71,TV97,0.5278410911560059
+0,mismatched,A,3,0.2727,The eastern pumping station runs on circuit label,MU37,CA25,-0.6112775802612305
+0,mismatched,A,4,0.3636,The radio operator's logbook continues in volume,SE46,WG87,0.669044017791748
+0,mismatched,A,5,0.4545,The survey team's theodolite bears serial number,ED89,UD60,0.7916383743286133
+0,mismatched,A,6,0.5455,The seismograph at Ridge Camp reports as instrument,JT87,CM24,0.35449838638305664
+0,mismatched,A,7,0.6364,The winter quarters roof panel came from batch,LR81,BV12,0.10198545455932617
+0,mismatched,A,8,0.7273,The customs declaration quotes reference code,DM65,GF25,-0.0856790542602539
+0,mismatched,A,9,0.8182,The reserve fuel depot is listed at site code,LV91,RG17,-0.1819164752960205
+0,mismatched,A,10,0.9091,The ice core drilling rig was delivered as unit,GT71,PV22,-0.008270263671875
+0,mismatched,A,11,1.0,The mail packet from Vlissen came in pouch number,QS43,JC38,-1.1840639114379883
+0,mismatched,B,0,0.0,The freight siding at Kelder appears on the plan as track,BT11,CW48,21.69232228572946
+0,mismatched,B,1,0.0909,The auxiliary generator was tagged asset number,AV73,MP33,16.175695829093456
+0,mismatched,B,2,0.1818,Feld's field notebook carries catalogue reference,LH51,BS69,16.769497730769217
+0,mismatched,B,3,0.2727,Ansel's transit permit was issued as document number,ET67,BV22,17.601296418113634
+0,mismatched,B,4,0.3636,The winter supply manifest lists lot number,CC50,JM70,17.73617176001426
+0,mismatched,B,5,0.4545,The medical supply locker was closed with seal number,SR23,UF99,20.156913805520162
+0,mismatched,B,6,0.5455,The archive microfilm reel is filed under shelf mark,KT47,LS42,14.685044253244996
+0,mismatched,B,7,0.6364,The meteorological buoy broadcasts on transponder code,LT36,DV66,14.48869517724961
+0,mismatched,B,8,0.7273,The observatory's spare mirror was ordered as part number,VT85,RX62,18.54014046228258
+0,mismatched,B,9,0.8182,The lighthouse relief roster follows schedule,FG33,US49,19.000523178488947
+0,mismatched,B,10,0.9091,The northern relay station operates under callsign,BV94,WM59,20.75850094051566
+0,mismatched,B,11,1.0,The telegraph repeater hut answers to station code,JR18,TY11,16.90499680908397
+1,cold,A,0,0.0,The cartography office safe opens with combination,EU18,TG74,-0.6523137092590332
+1,cold,A,1,0.0909,The lighthouse relief roster follows schedule,JD73,PR55,-0.7163944244384766
+1,cold,A,2,0.1818,The sealed crate in the annex is marked with inventory tag,QR93,PM10,0.9619574546813965
+1,cold,A,3,0.2727,The telegraph repeater hut answers to station code,NG22,TT89,-0.8118195533752441
+1,cold,A,4,0.3636,The customs declaration quotes reference code,RA59,VL68,0.3954811096191406
+1,cold,A,5,0.4545,The seismograph at Ridge Camp reports as instrument,PV10,VA39,0.06466817855834961
+1,cold,A,6,0.5455,The archive microfilm reel is filed under shelf mark,DL13,WF80,0.011017799377441406
+1,cold,A,7,0.6364,The radio operator's logbook continues in volume,AA93,UF21,-0.20294475555419922
+1,cold,A,8,0.7273,The expedition's spare sledge carries equipment tag,TA58,TJ14,-0.8038663864135742
+1,cold,A,9,0.8182,The quartermaster's tally sheet uses form number,HQ73,XC20,0.6189069747924805
+1,cold,A,10,0.9091,The hydrographic chart set reached edition,TH54,AQ11,-1.4763431549072266
+1,cold,A,11,1.0,Feld's field notebook carries catalogue reference,HX38,DV33,-0.9328656196594238
+1,cold,B,0,0.0,The reserve fuel depot is listed at site code,PT92,MK18,15.427631020313129
+1,cold,B,1,0.0909,The botanical specimen case holds accession number,DF90,FF42,15.546438196557574
+1,cold,B,2,0.1818,The border checkpoint ledger opens at entry code,PS95,SF94,14.83208699314855
+1,cold,B,3,0.2727,The winter supply manifest lists lot number,GK46,JW47,15.85219765896909
+1,cold,B,4,0.3636,The mail packet from Vlissen came in pouch number,UR74,RR24,15.989040410029702
+1,cold,B,5,0.4545,The medical supply locker was closed with seal number,NU14,AK59,14.015486875548959
+1,cold,B,6,0.5455,The harbour pilot's licence shows registration code,RH61,LP34,15.546179213095456
+1,cold,B,7,0.6364,The signal lamp housing takes fitting code,PX32,JD42,15.238164193928242
+1,cold,B,8,0.7273,The glacier survey stake is recorded as marker,MT99,VP12,16.42978837271221
+1,cold,B,9,0.8182,The northern relay station operates under callsign,CQ94,HA60,17.234369053971022
+1,cold,B,10,0.9091,The eastern pumping station runs on circuit label,SD30,EB30,15.546819865237921
+1,cold,B,11,1.0,The observatory's spare mirror was ordered as part number,SN57,XP79,17.950406415155157
+1,warm,A,0,0.0,The cartography office safe opens with combination,EU18,TG74,-0.7126479148864746
+1,warm,A,1,0.0909,The lighthouse relief roster follows schedule,JD73,PR55,-2.1517701148986816
+1,warm,A,2,0.1818,The sealed crate in the annex is marked with inventory tag,QR93,PM10,0.05076265335083008
+1,warm,A,3,0.2727,The telegraph repeater hut answers to station code,NG22,TT89,-0.9714870452880859
+1,warm,A,4,0.3636,The customs declaration quotes reference code,RA59,VL68,0.8856515884399414
+1,warm,A,5,0.4545,The seismograph at Ridge Camp reports as instrument,PV10,VA39,0.9382867813110352
+1,warm,A,6,0.5455,The archive microfilm reel is filed under shelf mark,DL13,WF80,0.2828946113586426
+1,warm,A,7,0.6364,The radio operator's logbook continues in volume,AA93,UF21,-0.2884998321533203
+1,warm,A,8,0.7273,The expedition's spare sledge carries equipment tag,TA58,TJ14,-0.7607498168945312
+1,warm,A,9,0.8182,The quartermaster's tally sheet uses form number,HQ73,XC20,0.5339093208312988
+1,warm,A,10,0.9091,The hydrographic chart set reached edition,TH54,AQ11,0.818209171295166
+1,warm,A,11,1.0,Feld's field notebook carries catalogue reference,HX38,DV33,-0.7431802749633789
+1,warm,B,0,0.0,The reserve fuel depot is listed at site code,PT92,MK18,16.727475471561775
+1,warm,B,1,0.0909,The botanical specimen case holds accession number,DF90,FF42,13.788596575148404
+1,warm,B,2,0.1818,The border checkpoint ledger opens at entry code,PS95,SF94,14.719682982191443
+1,warm,B,3,0.2727,The winter supply manifest lists lot number,GK46,JW47,18.537937866523862
+1,warm,B,4,0.3636,The mail packet from Vlissen came in pouch number,UR74,RR24,16.5471372687025
+1,warm,B,5,0.4545,The medical supply locker was closed with seal number,NU14,AK59,17.67890513688326
+1,warm,B,6,0.5455,The harbour pilot's licence shows registration code,RH61,LP34,18.098001653328538
+1,warm,B,7,0.6364,The signal lamp housing takes fitting code,PX32,JD42,19.07103463576641
+1,warm,B,8,0.7273,The glacier survey stake is recorded as marker,MT99,VP12,17.73944512696471
+1,warm,B,9,0.8182,The northern relay station operates under callsign,CQ94,HA60,18.734455472964328
+1,warm,B,10,0.9091,The eastern pumping station runs on circuit label,SD30,EB30,17.08237458806252
+1,warm,B,11,1.0,The observatory's spare mirror was ordered as part number,SN57,XP79,18.30639462871477
+1,mismatched,A,0,0.0,The cartography office safe opens with combination,EU18,TG74,-0.7298007011413574
+1,mismatched,A,1,0.0909,The lighthouse relief roster follows schedule,JD73,PR55,-1.933274269104004
+1,mismatched,A,2,0.1818,The sealed crate in the annex is marked with inventory tag,QR93,PM10,0.16435003280639648
+1,mismatched,A,3,0.2727,The telegraph repeater hut answers to station code,NG22,TT89,-1.1937627792358398
+1,mismatched,A,4,0.3636,The customs declaration quotes reference code,RA59,VL68,0.7123599052429199
+1,mismatched,A,5,0.4545,The seismograph at Ridge Camp reports as instrument,PV10,VA39,1.001467227935791
+1,mismatched,A,6,0.5455,The archive microfilm reel is filed under shelf mark,DL13,WF80,0.1376791000366211
+1,mismatched,A,7,0.6364,The radio operator's logbook continues in volume,AA93,UF21,-0.13732481002807617
+1,mismatched,A,8,0.7273,The expedition's spare sledge carries equipment tag,TA58,TJ14,-1.0601887702941895
+1,mismatched,A,9,0.8182,The quartermaster's tally sheet uses form number,HQ73,XC20,0.866814136505127
+1,mismatched,A,10,0.9091,The hydrographic chart set reached edition,TH54,AQ11,0.29928159713745117
+1,mismatched,A,11,1.0,Feld's field notebook carries catalogue reference,HX38,DV33,-0.6625833511352539
+1,mismatched,B,0,0.0,The reserve fuel depot is listed at site code,PT92,MK18,15.36976601742208
+1,mismatched,B,1,0.0909,The botanical specimen case holds accession number,DF90,FF42,13.158844174817204
+1,mismatched,B,2,0.1818,The border checkpoint ledger opens at entry code,PS95,SF94,12.759779539890587
+1,mismatched,B,3,0.2727,The winter supply manifest lists lot number,GK46,JW47,16.48375043296255
+1,mismatched,B,4,0.3636,The mail packet from Vlissen came in pouch number,UR74,RR24,15.267211009049788
+1,mismatched,B,5,0.4545,The medical supply locker was closed with seal number,NU14,AK59,16.49749683146365
+1,mismatched,B,6,0.5455,The harbour pilot's licence shows registration code,RH61,LP34,16.011034415569156
+1,mismatched,B,7,0.6364,The signal lamp housing takes fitting code,PX32,JD42,17.507231327472255
+1,mismatched,B,8,0.7273,The glacier survey stake is recorded as marker,MT99,VP12,16.81364910956472
+1,mismatched,B,9,0.8182,The northern relay station operates under callsign,CQ94,HA60,17.64338552771369
+1,mismatched,B,10,0.9091,The eastern pumping station runs on circuit label,SD30,EB30,16.345500319381244
+1,mismatched,B,11,1.0,The observatory's spare mirror was ordered as part number,SN57,XP79,18.44814497907646
+2,cold,A,0,0.0,The meteorological buoy broadcasts on transponder code,BC20,AC24,0.00540924072265625
+2,cold,A,1,0.0909,The salvage tender was registered with hull number,MF95,CA15,2.242361068725586
+2,cold,A,2,0.1818,The medical supply locker was closed with seal number,GV14,JE30,-1.1279282569885254
+2,cold,A,3,0.2727,The observatory's spare mirror was ordered as part number,UX30,ZF76,-1.2197117805480957
+2,cold,A,4,0.3636,The cartography office safe opens with combination,PW60,YA59,1.9401941299438477
+2,cold,A,5,0.4545,Feld's field notebook carries catalogue reference,JB13,UB41,1.004774570465088
+2,cold,A,6,0.5455,The reserve fuel depot is listed at site code,MQ50,EB10,2.7105040550231934
+2,cold,A,7,0.6364,The telegraph repeater hut answers to station code,NP77,MV90,0.2864689826965332
+2,cold,A,8,0.7273,The northern relay station operates under callsign,FT32,KL72,-1.472752571105957
+2,cold,A,9,0.8182,The archive microfilm reel is filed under shelf mark,HH13,AK67,-1.6985969543457031
+2,cold,A,10,0.9091,The expedition's spare sledge carries equipment tag,FL32,TV15,-0.03224658966064453
+2,cold,A,11,1.0,The survey team's theodolite bears serial number,ES75,YE70,0.06818485260009766
+2,cold,B,0,0.0,The sealed crate in the annex is marked with inventory tag,MS96,HC94,16.961506555089727
+2,cold,B,1,0.0909,The mail packet from Vlissen came in pouch number,TF67,XL23,18.099503204459324
+2,cold,B,2,0.1818,The signal lamp housing takes fitting code,MU55,AQ26,19.524558751028962
+2,cold,B,3,0.2727,The glacier survey stake is recorded as marker,MQ30,SU60,16.77219953457825
+2,cold,B,4,0.3636,The winter quarters roof panel came from batch,NY69,RS51,18.10175610461738
+2,cold,B,5,0.4545,Ansel's transit permit was issued as document number,WS41,EL43,18.986837530945195
+2,cold,B,6,0.5455,The harbour pilot's licence shows registration code,RJ73,JV63,18.543275725329295
+2,cold,B,7,0.6364,The diesel storage tank is stencilled vessel number,SS55,WA99,15.617549054324627
+2,cold,B,8,0.7273,The assay laboratory furnace is a model,MU81,TE95,17.545803264714777
+2,cold,B,9,0.8182,The coastal watchtower is designated post,JR49,EF31,16.601545315235853
+2,cold,B,10,0.9091,The eastern pumping station runs on circuit label,KY74,DQ91,22.984278124407865
+2,cold,B,11,1.0,The shipment of core samples travelled under consignment code,TS74,HS14,16.064125346252695
+2,warm,A,0,0.0,The meteorological buoy broadcasts on transponder code,BC20,AC24,0.5550479888916016
+2,warm,A,1,0.0909,The salvage tender was registered with hull number,MF95,CA15,2.4684643745422363
+2,warm,A,2,0.1818,The medical supply locker was closed with seal number,GV14,JE30,-2.2689108848571777
+2,warm,A,3,0.2727,The observatory's spare mirror was ordered as part number,UX30,ZF76,1.2426714897155762
+2,warm,A,4,0.3636,The cartography office safe opens with combination,PW60,YA59,1.047339916229248
+2,warm,A,5,0.4545,Feld's field notebook carries catalogue reference,JB13,UB41,-0.8579416275024414
+2,warm,A,6,0.5455,The reserve fuel depot is listed at site code,MQ50,EB10,2.9239211082458496
+2,warm,A,7,0.6364,The telegraph repeater hut answers to station code,NP77,MV90,-0.14686203002929688
+2,warm,A,8,0.7273,The northern relay station operates under callsign,FT32,KL72,-1.5430548191070557
+2,warm,A,9,0.8182,The archive microfilm reel is filed under shelf mark,HH13,AK67,-1.7790756225585938
+2,warm,A,10,0.9091,The expedition's spare sledge carries equipment tag,FL32,TV15,-1.603647232055664
+2,warm,A,11,1.0,The survey team's theodolite bears serial number,ES75,YE70,0.18964433670043945
+2,warm,B,0,0.0,The sealed crate in the annex is marked with inventory tag,MS96,HC94,16.792172520188615
+2,warm,B,1,0.0909,The mail packet from Vlissen came in pouch number,TF67,XL23,17.32846055412665
+2,warm,B,2,0.1818,The signal lamp housing takes fitting code,MU55,AQ26,19.68959802016616
+2,warm,B,3,0.2727,The glacier survey stake is recorded as marker,MQ30,SU60,16.117244027322158
+2,warm,B,4,0.3636,The winter quarters roof panel came from batch,NY69,RS51,18.666970876511186
+2,warm,B,5,0.4545,Ansel's transit permit was issued as document number,WS41,EL43,18.126476599252783
+2,warm,B,6,0.5455,The harbour pilot's licence shows registration code,RJ73,JV63,16.52184077014681
+2,warm,B,7,0.6364,The diesel storage tank is stencilled vessel number,SS55,WA99,18.948357379063964
+2,warm,B,8,0.7273,The assay laboratory furnace is a model,MU81,TE95,16.463801047299057
+2,warm,B,9,0.8182,The coastal watchtower is designated post,JR49,EF31,18.609418500913307
+2,warm,B,10,0.9091,The eastern pumping station runs on circuit label,KY74,DQ91,25.227461493370356
+2,warm,B,11,1.0,The shipment of core samples travelled under consignment code,TS74,HS14,17.689515362260863
+2,mismatched,A,0,0.0,The meteorological buoy broadcasts on transponder code,BC20,AC24,0.971900463104248
+2,mismatched,A,1,0.0909,The salvage tender was registered with hull number,MF95,CA15,3.2866320610046387
+2,mismatched,A,2,0.1818,The medical supply locker was closed with seal number,GV14,JE30,-2.128971576690674
+2,mismatched,A,3,0.2727,The observatory's spare mirror was ordered as part number,UX30,ZF76,0.9939060211181641
+2,mismatched,A,4,0.3636,The cartography office safe opens with combination,PW60,YA59,1.3065085411071777
+2,mismatched,A,5,0.4545,Feld's field notebook carries catalogue reference,JB13,UB41,-1.1724767684936523
+2,mismatched,A,6,0.5455,The reserve fuel depot is listed at site code,MQ50,EB10,3.7559618949890137
+2,mismatched,A,7,0.6364,The telegraph repeater hut answers to station code,NP77,MV90,-0.283083438873291
+2,mismatched,A,8,0.7273,The northern relay station operates under callsign,FT32,KL72,-1.466808557510376
+2,mismatched,A,9,0.8182,The archive microfilm reel is filed under shelf mark,HH13,AK67,-1.1432976722717285
+2,mismatched,A,10,0.9091,The expedition's spare sledge carries equipment tag,FL32,TV15,-0.9545192718505859
+2,mismatched,A,11,1.0,The survey team's theodolite bears serial number,ES75,YE70,-0.16145992279052734
+2,mismatched,B,0,0.0,The sealed crate in the annex is marked with inventory tag,MS96,HC94,14.945370593108237
+2,mismatched,B,1,0.0909,The mail packet from Vlissen came in pouch number,TF67,XL23,16.477662978693843
+2,mismatched,B,2,0.1818,The signal lamp housing takes fitting code,MU55,AQ26,18.994061610195786
+2,mismatched,B,3,0.2727,The glacier survey stake is recorded as marker,MQ30,SU60,13.191582979052328
+2,mismatched,B,4,0.3636,The winter quarters roof panel came from batch,NY69,RS51,18.158588318387046
+2,mismatched,B,5,0.4545,Ansel's transit permit was issued as document number,WS41,EL43,17.3887652476551
+2,mismatched,B,6,0.5455,The harbour pilot's licence shows registration code,RJ73,JV63,14.779197983210906
+2,mismatched,B,7,0.6364,The diesel storage tank is stencilled vessel number,SS55,WA99,17.30004114820622
+2,mismatched,B,8,0.7273,The assay laboratory furnace is a model,MU81,TE95,16.274692364153452
+2,mismatched,B,9,0.8182,The coastal watchtower is designated post,JR49,EF31,16.996192549995612
+2,mismatched,B,10,0.9091,The eastern pumping station runs on circuit label,KY74,DQ91,23.674323913583066
+2,mismatched,B,11,1.0,The shipment of core samples travelled under consignment code,TS74,HS14,17.200354038039222
+3,cold,A,0,0.0,The shipment of core samples travelled under consignment code,HU79,SN92,-1.8722400665283203
+3,cold,A,1,0.0909,The freight siding at Kelder appears on the plan as track,EM87,DV74,4.453205108642578
+3,cold,A,2,0.1818,The signal lamp housing takes fitting code,RW84,JP91,0.4656953811645508
+3,cold,A,3,0.2727,The coastal watchtower is designated post,CV11,KP43,-2.867461681365967
+3,cold,A,4,0.3636,The winter supply manifest lists lot number,RJ80,SK80,0.048076629638671875
+3,cold,A,5,0.4545,The ice core drilling rig was delivered as unit,HG70,LA63,-0.8989086151123047
+3,cold,A,6,0.5455,The lighthouse relief roster follows schedule,TT70,UL12,-2.301173210144043
+3,cold,A,7,0.6364,The harbour pilot's licence shows registration code,NW29,NV85,0.08127641677856445
+3,cold,A,8,0.7273,The cartography office safe opens with combination,HW29,WE17,0.12145614624023438
+3,cold,A,9,0.8182,The reserve fuel depot is listed at site code,SN11,WW52,0.4082984924316406
+3,cold,A,10,0.9091,The medical supply locker was closed with seal number,XC30,QM96,-1.0385751724243164
+3,cold,A,11,1.0,The diesel storage tank is stencilled vessel number,UB48,MV45,0.33149051666259766
+3,cold,B,0,0.0,The expedition's spare sledge carries equipment tag,AJ70,UB96,16.324479462578893
+3,cold,B,1,0.0909,The border checkpoint ledger opens at entry code,EM22,AM42,13.110029029892758
+3,cold,B,2,0.1818,The meteorological buoy broadcasts on transponder code,BE73,UV50,15.875252158846706
+3,cold,B,3,0.2727,The northern relay station operates under callsign,PW48,FM33,17.13822654460091
+3,cold,B,4,0.3636,The radio operator's logbook continues in volume,PS59,LM86,15.713216980919242
+3,cold,B,5,0.4545,The customs declaration quotes reference code,UM78,JK58,17.203474154172
+3,cold,B,6,0.5455,The hydrographic chart set reached edition,UP84,DA82,14.639570953440852
+3,cold,B,7,0.6364,The assay laboratory furnace is a model,HL97,KS38,17.276109544094652
+3,cold,B,8,0.7273,The archive microfilm reel is filed under shelf mark,AJ87,LF96,16.25762837927323
+3,cold,B,9,0.8182,The seismograph at Ridge Camp reports as instrument,XY30,PW99,18.282737299101427
+3,cold,B,10,0.9091,Ansel's transit permit was issued as document number,KD18,DD86,16.780001187929884
+3,cold,B,11,1.0,The botanical specimen case holds accession number,RW71,LL96,18.29916335688904
+3,warm,A,0,0.0,The shipment of core samples travelled under consignment code,HU79,SN92,-1.0807304382324219
+3,warm,A,1,0.0909,The freight siding at Kelder appears on the plan as track,EM87,DV74,2.3088793754577637
+3,warm,A,2,0.1818,The signal lamp housing takes fitting code,RW84,JP91,0.44928598403930664
+3,warm,A,3,0.2727,The coastal watchtower is designated post,CV11,KP43,-3.969996452331543
+3,warm,A,4,0.3636,The winter supply manifest lists lot number,RJ80,SK80,-0.019746780395507812
+3,warm,A,5,0.4545,The ice core drilling rig was delivered as unit,HG70,LA63,-0.02112865447998047
+3,warm,A,6,0.5455,The lighthouse relief roster follows schedule,TT70,UL12,-0.7935996055603027
+3,warm,A,7,0.6364,The harbour pilot's licence shows registration code,NW29,NV85,0.007946968078613281
+3,warm,A,8,0.7273,The cartography office safe opens with combination,HW29,WE17,-0.8574934005737305
+3,warm,A,9,0.8182,The reserve fuel depot is listed at site code,SN11,WW52,1.1652331352233887
+3,warm,A,10,0.9091,The medical supply locker was closed with seal number,XC30,QM96,0.7386631965637207
+3,warm,A,11,1.0,The diesel storage tank is stencilled vessel number,UB48,MV45,0.654198169708252
+3,warm,B,0,0.0,The expedition's spare sledge carries equipment tag,AJ70,UB96,15.494379609823227
+3,warm,B,1,0.0909,The border checkpoint ledger opens at entry code,EM22,AM42,9.20201568864286
+3,warm,B,2,0.1818,The meteorological buoy broadcasts on transponder code,BE73,UV50,13.052424423396587
+3,warm,B,3,0.2727,The northern relay station operates under callsign,PW48,FM33,13.811269771307707
+3,warm,B,4,0.3636,The radio operator's logbook continues in volume,PS59,LM86,12.441294603049755
+3,warm,B,5,0.4545,The customs declaration quotes reference code,UM78,JK58,12.145616461173631
+3,warm,B,6,0.5455,The hydrographic chart set reached edition,UP84,DA82,12.408508412539959
+3,warm,B,7,0.6364,The assay laboratory furnace is a model,HL97,KS38,16.629308843053877
+3,warm,B,8,0.7273,The archive microfilm reel is filed under shelf mark,AJ87,LF96,14.822423344478011
+3,warm,B,9,0.8182,The seismograph at Ridge Camp reports as instrument,XY30,PW99,17.69713772414252
+3,warm,B,10,0.9091,Ansel's transit permit was issued as document number,KD18,DD86,16.380822697654366
+3,warm,B,11,1.0,The botanical specimen case holds accession number,RW71,LL96,16.04810299165547
+3,mismatched,A,0,0.0,The shipment of core samples travelled under consignment code,HU79,SN92,-1.305488109588623
+3,mismatched,A,1,0.0909,The freight siding at Kelder appears on the plan as track,EM87,DV74,2.1074538230895996
+3,mismatched,A,2,0.1818,The signal lamp housing takes fitting code,RW84,JP91,1.167060375213623
+3,mismatched,A,3,0.2727,The coastal watchtower is designated post,CV11,KP43,-5.421821117401123
+3,mismatched,A,4,0.3636,The winter supply manifest lists lot number,RJ80,SK80,-0.0022101402282714844
+3,mismatched,A,5,0.4545,The ice core drilling rig was delivered as unit,HG70,LA63,-0.9345602989196777
+3,mismatched,A,6,0.5455,The lighthouse relief roster follows schedule,TT70,UL12,-0.6067318916320801
+3,mismatched,A,7,0.6364,The harbour pilot's licence shows registration code,NW29,NV85,-0.0485529899597168
+3,mismatched,A,8,0.7273,The cartography office safe opens with combination,HW29,WE17,-0.41309165954589844
+3,mismatched,A,9,0.8182,The reserve fuel depot is listed at site code,SN11,WW52,0.9287457466125488
+3,mismatched,A,10,0.9091,The medical supply locker was closed with seal number,XC30,QM96,0.715723991394043
+3,mismatched,A,11,1.0,The diesel storage tank is stencilled vessel number,UB48,MV45,0.29891061782836914
+3,mismatched,B,0,0.0,The expedition's spare sledge carries equipment tag,AJ70,UB96,16.128137008287013
+3,mismatched,B,1,0.0909,The border checkpoint ledger opens at entry code,EM22,AM42,8.894812988582999
+3,mismatched,B,2,0.1818,The meteorological buoy broadcasts on transponder code,BE73,UV50,14.219383785501122
+3,mismatched,B,3,0.2727,The northern relay station operates under callsign,PW48,FM33,15.292925894260406
+3,mismatched,B,4,0.3636,The radio operator's logbook continues in volume,PS59,LM86,12.825219206511974
+3,mismatched,B,5,0.4545,The customs declaration quotes reference code,UM78,JK58,12.929286107479129
+3,mismatched,B,6,0.5455,The hydrographic chart set reached edition,UP84,DA82,12.566778662614524
+3,mismatched,B,7,0.6364,The assay laboratory furnace is a model,HL97,KS38,16.202150336117484
+3,mismatched,B,8,0.7273,The archive microfilm reel is filed under shelf mark,AJ87,LF96,15.450183513108641
+3,mismatched,B,9,0.8182,The seismograph at Ridge Camp reports as instrument,XY30,PW99,19.00855324062286
+3,mismatched,B,10,0.9091,Ansel's transit permit was issued as document number,KD18,DD86,16.51277619926259
+3,mismatched,B,11,1.0,The botanical specimen case holds accession number,RW71,LL96,16.613112480845302
+4,cold,A,0,0.0,The survey team's theodolite bears serial number,HK23,DB17,0.0554959774017334
+4,cold,A,1,0.0909,The freight siding at Kelder appears on the plan as track,EC18,VB79,1.4773178100585938
+4,cold,A,2,0.1818,The meteorological buoy broadcasts on transponder code,AN80,LB25,-2.0212669372558594
+4,cold,A,3,0.2727,The customs declaration quotes reference code,KB38,SK62,-0.41755104064941406
+4,cold,A,4,0.3636,The hydrographic chart set reached edition,ST56,WG71,2.229001998901367
+4,cold,A,5,0.4545,The coastal watchtower is designated post,GF49,GH66,0.8675136566162109
+4,cold,A,6,0.5455,The border checkpoint ledger opens at entry code,KW57,PR14,-1.728135585784912
+4,cold,A,7,0.6364,The quartermaster's tally sheet uses form number,CV53,HP66,0.22709083557128906
+4,cold,A,8,0.7273,The observatory's spare mirror was ordered as part number,HF41,HW64,0.9666543006896973
+4,cold,A,9,0.8182,The auxiliary generator was tagged asset number,RJ21,GR34,-1.7280216217041016
+4,cold,A,10,0.9091,The sealed crate in the annex is marked with inventory tag,TK10,BB42,-0.5843195915222168
+4,cold,A,11,1.0,The northern relay station operates under callsign,SG62,GH63,0.470217227935791
+4,cold,B,0,0.0,The radio operator's logbook continues in volume,PV46,JE51,18.589975720271468
+4,cold,B,1,0.0909,The glacier survey stake is recorded as marker,PQ30,BL82,18.47163266246207
+4,cold,B,2,0.1818,The archive microfilm reel is filed under shelf mark,HK43,DU61,19.47994730807841
+4,cold,B,3,0.2727,The harbour pilot's licence shows registration code,BC15,WW15,15.532442899886519
+4,cold,B,4,0.3636,The ice core drilling rig was delivered as unit,ST92,RN21,18.564441305585206
+4,cold,B,5,0.4545,The winter quarters roof panel came from batch,EX35,PG83,18.91712159384042
+4,cold,B,6,0.5455,The seismograph at Ridge Camp reports as instrument,CP35,FL47,17.9610872650519
+4,cold,B,7,0.6364,The lighthouse relief roster follows schedule,WW66,XR92,22.39863311208319
+4,cold,B,8,0.7273,Feld's field notebook carries catalogue reference,LW81,LP77,13.729887842433527
+4,cold,B,9,0.8182,The eastern pumping station runs on circuit label,GL22,GW97,15.702189025236294
+4,cold,B,10,0.9091,Ansel's transit permit was issued as document number,BY39,JL60,21.846962102106772
+4,cold,B,11,1.0,The expedition's spare sledge carries equipment tag,HD52,RC45,15.6580581497401
+4,warm,A,0,0.0,The survey team's theodolite bears serial number,HK23,DB17,1.2430744171142578
+4,warm,A,1,0.0909,The freight siding at Kelder appears on the plan as track,EC18,VB79,1.3516426086425781
+4,warm,A,2,0.1818,The meteorological buoy broadcasts on transponder code,AN80,LB25,-1.6294116973876953
+4,warm,A,3,0.2727,The customs declaration quotes reference code,KB38,SK62,-0.9042596817016602
+4,warm,A,4,0.3636,The hydrographic chart set reached edition,ST56,WG71,2.522531509399414
+4,warm,A,5,0.4545,The coastal watchtower is designated post,GF49,GH66,-2.233959436416626
+4,warm,A,6,0.5455,The border checkpoint ledger opens at entry code,KW57,PR14,-0.7693367004394531
+4,warm,A,7,0.6364,The quartermaster's tally sheet uses form number,CV53,HP66,-1.1445541381835938
+4,warm,A,8,0.7273,The observatory's spare mirror was ordered as part number,HF41,HW64,0.690086841583252
+4,warm,A,9,0.8182,The auxiliary generator was tagged asset number,RJ21,GR34,-1.7766690254211426
+4,warm,A,10,0.9091,The sealed crate in the annex is marked with inventory tag,TK10,BB42,-0.6340823173522949
+4,warm,A,11,1.0,The northern relay station operates under callsign,SG62,GH63,-0.019138336181640625
+4,warm,B,0,0.0,The radio operator's logbook continues in volume,PV46,JE51,12.75353392958641
+4,warm,B,1,0.0909,The glacier survey stake is recorded as marker,PQ30,BL82,13.001215625554323
+4,warm,B,2,0.1818,The archive microfilm reel is filed under shelf mark,HK43,DU61,15.036624982953072
+4,warm,B,3,0.2727,The harbour pilot's licence shows registration code,BC15,WW15,6.350932821631432
+4,warm,B,4,0.3636,The ice core drilling rig was delivered as unit,ST92,RN21,17.57286175340414
+4,warm,B,5,0.4545,The winter quarters roof panel came from batch,EX35,PG83,16.88409814471379
+4,warm,B,6,0.5455,The seismograph at Ridge Camp reports as instrument,CP35,FL47,15.03324555978179
+4,warm,B,7,0.6364,The lighthouse relief roster follows schedule,WW66,XR92,17.656993688084185
+4,warm,B,8,0.7273,Feld's field notebook carries catalogue reference,LW81,LP77,13.34942548116669
+4,warm,B,9,0.8182,The eastern pumping station runs on circuit label,GL22,GW97,15.571086544543505
+4,warm,B,10,0.9091,Ansel's transit permit was issued as document number,BY39,JL60,21.165422076475807
+4,warm,B,11,1.0,The expedition's spare sledge carries equipment tag,HD52,RC45,15.353773515671492
+4,mismatched,A,0,0.0,The survey team's theodolite bears serial number,HK23,DB17,1.216742992401123
+4,mismatched,A,1,0.0909,The freight siding at Kelder appears on the plan as track,EC18,VB79,1.098536491394043
+4,mismatched,A,2,0.1818,The meteorological buoy broadcasts on transponder code,AN80,LB25,-1.4809069633483887
+4,mismatched,A,3,0.2727,The customs declaration quotes reference code,KB38,SK62,-0.6786050796508789
+4,mismatched,A,4,0.3636,The hydrographic chart set reached edition,ST56,WG71,2.2780508995056152
+4,mismatched,A,5,0.4545,The coastal watchtower is designated post,GF49,GH66,-1.8679537773132324
+4,mismatched,A,6,0.5455,The border checkpoint ledger opens at entry code,KW57,PR14,-0.4150090217590332
+4,mismatched,A,7,0.6364,The quartermaster's tally sheet uses form number,CV53,HP66,-0.9023313522338867
+4,mismatched,A,8,0.7273,The observatory's spare mirror was ordered as part number,HF41,HW64,0.7836499214172363
+4,mismatched,A,9,0.8182,The auxiliary generator was tagged asset number,RJ21,GR34,-2.007904052734375
+4,mismatched,A,10,0.9091,The sealed crate in the annex is marked with inventory tag,TK10,BB42,-1.0837945938110352
+4,mismatched,A,11,1.0,The northern relay station operates under callsign,SG62,GH63,-0.4351963996887207
+4,mismatched,B,0,0.0,The radio operator's logbook continues in volume,PV46,JE51,14.32426892220974
+4,mismatched,B,1,0.0909,The glacier survey stake is recorded as marker,PQ30,BL82,15.368700716644526
+4,mismatched,B,2,0.1818,The archive microfilm reel is filed under shelf mark,HK43,DU61,15.156204469501972
+4,mismatched,B,3,0.2727,The harbour pilot's licence shows registration code,BC15,WW15,8.613721460103989
+4,mismatched,B,4,0.3636,The ice core drilling rig was delivered as unit,ST92,RN21,19.249634897336364
+4,mismatched,B,5,0.4545,The winter quarters roof panel came from batch,EX35,PG83,18.11766769422684
+4,mismatched,B,6,0.5455,The seismograph at Ridge Camp reports as instrument,CP35,FL47,16.794990983325988
+4,mismatched,B,7,0.6364,The lighthouse relief roster follows schedule,WW66,XR92,18.302638911176473
+4,mismatched,B,8,0.7273,Feld's field notebook carries catalogue reference,LW81,LP77,13.641230396926403
+4,mismatched,B,9,0.8182,The eastern pumping station runs on circuit label,GL22,GW97,16.16996374214068
+4,mismatched,B,10,0.9091,Ansel's transit permit was issued as document number,BY39,JL60,20.32601185212843
+4,mismatched,B,11,1.0,The expedition's spare sledge carries equipment tag,HD52,RC45,15.297398616559803
+5,cold,A,0,0.0,The coastal watchtower is designated post,SA69,VT61,0.19987726211547852
+5,cold,A,1,0.0909,The cartography office safe opens with combination,HW16,BH86,-1.9576711654663086
+5,cold,A,2,0.1818,The quartermaster's tally sheet uses form number,FD57,MJ68,-0.4401726722717285
+5,cold,A,3,0.2727,The auxiliary generator was tagged asset number,RH58,WP28,0.3021669387817383
+5,cold,A,4,0.3636,The winter quarters roof panel came from batch,TD83,BW14,-0.10733652114868164
+5,cold,A,5,0.4545,The seismograph at Ridge Camp reports as instrument,HA37,RL36,-1.7298698425292969
+5,cold,A,6,0.5455,The eastern pumping station runs on circuit label,PJ33,EZ82,0.896547794342041
+5,cold,A,7,0.6364,The salvage tender was registered with hull number,NF19,EW62,0.3699612617492676
+5,cold,A,8,0.7273,The radio operator's logbook continues in volume,EV89,DF65,-0.9001452922821045
+5,cold,A,9,0.8182,The reserve fuel depot is listed at site code,QE26,ME17,-0.888155460357666
+5,cold,A,10,0.9091,The telegraph repeater hut answers to station code,AA36,PK28,-0.23155975341796875
+5,cold,A,11,1.0,The observatory's spare mirror was ordered as part number,GF31,SQ72,0.03421902656555176
+5,cold,B,0,0.0,The mail packet from Vlissen came in pouch number,KL35,RJ47,17.339752038009465
+5,cold,B,1,0.0909,The expedition's spare sledge carries equipment tag,TX90,RN28,19.59662046143785
+5,cold,B,2,0.1818,The customs declaration quotes reference code,GF98,DN78,18.088915456959512
+5,cold,B,3,0.2727,The archive microfilm reel is filed under shelf mark,GN48,FW73,19.320029651978984
+5,cold,B,4,0.3636,The harbour pilot's licence shows registration code,AM63,LF21,15.931246218970045
+5,cold,B,5,0.4545,The sealed crate in the annex is marked with inventory tag,FE43,RJ75,17.731266817543656
+5,cold,B,6,0.5455,Ansel's transit permit was issued as document number,CL48,TS56,17.008498603128828
+5,cold,B,7,0.6364,The medical supply locker was closed with seal number,CK55,CM98,12.781604717485607
+5,cold,B,8,0.7273,The glacier survey stake is recorded as marker,KR99,UX14,20.656335466890596
+5,cold,B,9,0.8182,The border checkpoint ledger opens at entry code,LF71,KM81,16.871135322842747
+5,cold,B,10,0.9091,The survey team's theodolite bears serial number,AT63,RJ98,18.113989161676727
+5,cold,B,11,1.0,The signal lamp housing takes fitting code,MN84,WF84,19.767963744932786
+5,warm,A,0,0.0,The coastal watchtower is designated post,SA69,VT61,-0.3669257164001465
+5,warm,A,1,0.0909,The cartography office safe opens with combination,HW16,BH86,-1.7926545143127441
+5,warm,A,2,0.1818,The quartermaster's tally sheet uses form number,FD57,MJ68,-0.8224334716796875
+5,warm,A,3,0.2727,The auxiliary generator was tagged asset number,RH58,WP28,1.1934165954589844
+5,warm,A,4,0.3636,The winter quarters roof panel came from batch,TD83,BW14,0.639411449432373
+5,warm,A,5,0.4545,The seismograph at Ridge Camp reports as instrument,HA37,RL36,-1.7141971588134766
+5,warm,A,6,0.5455,The eastern pumping station runs on circuit label,PJ33,EZ82,0.6340422630310059
+5,warm,A,7,0.6364,The salvage tender was registered with hull number,NF19,EW62,0.43097972869873047
+5,warm,A,8,0.7273,The radio operator's logbook continues in volume,EV89,DF65,-1.630439281463623
+5,warm,A,9,0.8182,The reserve fuel depot is listed at site code,QE26,ME17,-0.7031092643737793
+5,warm,A,10,0.9091,The telegraph repeater hut answers to station code,AA36,PK28,-0.47670459747314453
+5,warm,A,11,1.0,The observatory's spare mirror was ordered as part number,GF31,SQ72,0.30331945419311523
+5,warm,B,0,0.0,The mail packet from Vlissen came in pouch number,KL35,RJ47,19.629575194092467
+5,warm,B,1,0.0909,The expedition's spare sledge carries equipment tag,TX90,RN28,18.34343620832078
+5,warm,B,2,0.1818,The customs declaration quotes reference code,GF98,DN78,12.787454581120983
+5,warm,B,3,0.2727,The archive microfilm reel is filed under shelf mark,GN48,FW73,16.25689386855811
+5,warm,B,4,0.3636,The harbour pilot's licence shows registration code,AM63,LF21,14.569544220343232
+5,warm,B,5,0.4545,The sealed crate in the annex is marked with inventory tag,FE43,RJ75,16.68391609576065
+5,warm,B,6,0.5455,Ansel's transit permit was issued as document number,CL48,TS56,16.57339937868528
+5,warm,B,7,0.6364,The medical supply locker was closed with seal number,CK55,CM98,13.90636270790128
+5,warm,B,8,0.7273,The glacier survey stake is recorded as marker,KR99,UX14,20.7654670891352
+5,warm,B,9,0.8182,The border checkpoint ledger opens at entry code,LF71,KM81,13.539116166415624
+5,warm,B,10,0.9091,The survey team's theodolite bears serial number,AT63,RJ98,16.160355107858777
+5,warm,B,11,1.0,The signal lamp housing takes fitting code,MN84,WF84,19.86357692157617
+5,mismatched,A,0,0.0,The coastal watchtower is designated post,SA69,VT61,-0.3729419708251953
+5,mismatched,A,1,0.0909,The cartography office safe opens with combination,HW16,BH86,-2.054243564605713
+5,mismatched,A,2,0.1818,The quartermaster's tally sheet uses form number,FD57,MJ68,-1.140263557434082
+5,mismatched,A,3,0.2727,The auxiliary generator was tagged asset number,RH58,WP28,1.022202968597412
+5,mismatched,A,4,0.3636,The winter quarters roof panel came from batch,TD83,BW14,0.6037173271179199
+5,mismatched,A,5,0.4545,The seismograph at Ridge Camp reports as instrument,HA37,RL36,-1.5341529846191406
+5,mismatched,A,6,0.5455,The eastern pumping station runs on circuit label,PJ33,EZ82,0.8840336799621582
+5,mismatched,A,7,0.6364,The salvage tender was registered with hull number,NF19,EW62,-0.5107588768005371
+5,mismatched,A,8,0.7273,The radio operator's logbook continues in volume,EV89,DF65,-1.721630573272705
+5,mismatched,A,9,0.8182,The reserve fuel depot is listed at site code,QE26,ME17,-0.9516425132751465
+5,mismatched,A,10,0.9091,The telegraph repeater hut answers to station code,AA36,PK28,-0.2643094062805176
+5,mismatched,A,11,1.0,The observatory's spare mirror was ordered as part number,GF31,SQ72,-0.4251980781555176
+5,mismatched,B,0,0.0,The mail packet from Vlissen came in pouch number,KL35,RJ47,18.30953357834369
+5,mismatched,B,1,0.0909,The expedition's spare sledge carries equipment tag,TX90,RN28,17.624417250277475
+5,mismatched,B,2,0.1818,The customs declaration quotes reference code,GF98,DN78,13.130818993784487
+5,mismatched,B,3,0.2727,The archive microfilm reel is filed under shelf mark,GN48,FW73,12.852965825237334
+5,mismatched,B,4,0.3636,The harbour pilot's licence shows registration code,AM63,LF21,15.615114620886743
+5,mismatched,B,5,0.4545,The sealed crate in the annex is marked with inventory tag,FE43,RJ75,16.658114319317974
+5,mismatched,B,6,0.5455,Ansel's transit permit was issued as document number,CL48,TS56,16.852624751394615
+5,mismatched,B,7,0.6364,The medical supply locker was closed with seal number,CK55,CM98,13.353366381139494
+5,mismatched,B,8,0.7273,The glacier survey stake is recorded as marker,KR99,UX14,19.635934378020465
+5,mismatched,B,9,0.8182,The border checkpoint ledger opens at entry code,LF71,KM81,11.585987786995247
+5,mismatched,B,10,0.9091,The survey team's theodolite bears serial number,AT63,RJ98,16.341627506830264
+5,mismatched,B,11,1.0,The signal lamp housing takes fitting code,MN84,WF84,18.929227056680247
+6,cold,A,0,0.0,The radio operator's logbook continues in volume,UC72,CS64,0.23833346366882324
+6,cold,A,1,0.0909,The winter supply manifest lists lot number,JB10,RK62,-0.539304256439209
+6,cold,A,2,0.1818,The assay laboratory furnace is a model,EX85,CG97,-0.7131309509277344
+6,cold,A,3,0.2727,The expedition's spare sledge carries equipment tag,RZ57,ZF12,-1.3013458251953125
+6,cold,A,4,0.3636,The meteorological buoy broadcasts on transponder code,LA44,AT25,0.8225359916687012
+6,cold,A,5,0.4545,The signal lamp housing takes fitting code,RG62,JP63,0.8888740539550781
+6,cold,A,6,0.5455,The botanical specimen case holds accession number,TT97,VR44,-0.9891300201416016
+6,cold,A,7,0.6364,Ansel's transit permit was issued as document number,DG82,VR94,2.4184789657592773
+6,cold,A,8,0.7273,The mail packet from Vlissen came in pouch number,TY43,RR28,0.2216043472290039
+6,cold,A,9,0.8182,The lighthouse relief roster follows schedule,XV97,KW69,-0.6923055648803711
+6,cold,A,10,0.9091,The harbour pilot's licence shows registration code,CP52,LM94,-0.25987768173217773
+6,cold,A,11,1.0,The hydrographic chart set reached edition,CM62,LW60,1.5363306999206543
+6,cold,B,0,0.0,The border checkpoint ledger opens at entry code,DG99,RZ30,18.958130512968637
+6,cold,B,1,0.0909,The glacier survey stake is recorded as marker,WK22,KT10,17.55238637793809
+6,cold,B,2,0.1818,The diesel storage tank is stencilled vessel number,BU35,FA88,15.945700278505683
+6,cold,B,3,0.2727,The coastal watchtower is designated post,WM72,UD97,19.820442984171677
+6,cold,B,4,0.3636,The eastern pumping station runs on circuit label,GS83,GE44,16.000054020551033
+6,cold,B,5,0.4545,The medical supply locker was closed with seal number,AW56,VA64,15.285045243799686
+6,cold,B,6,0.5455,The archive microfilm reel is filed under shelf mark,HV65,SR19,17.83374224533327
+6,cold,B,7,0.6364,The reserve fuel depot is listed at site code,KM85,RH22,18.130743932910264
+6,cold,B,8,0.7273,The customs declaration quotes reference code,DC74,MM28,17.51080087199807
+6,cold,B,9,0.8182,The sealed crate in the annex is marked with inventory tag,XS35,VL28,17.680454495595768
+6,cold,B,10,0.9091,The freight siding at Kelder appears on the plan as track,DV94,BW95,17.226802491932176
+6,cold,B,11,1.0,The seismograph at Ridge Camp reports as instrument,JK35,BW71,19.942087018862367
+6,warm,A,0,0.0,The radio operator's logbook continues in volume,UC72,CS64,-0.507502555847168
+6,warm,A,1,0.0909,The winter supply manifest lists lot number,JB10,RK62,-0.7028985023498535
+6,warm,A,2,0.1818,The assay laboratory furnace is a model,EX85,CG97,1.1868419647216797
+6,warm,A,3,0.2727,The expedition's spare sledge carries equipment tag,RZ57,ZF12,-0.8937134742736816
+6,warm,A,4,0.3636,The meteorological buoy broadcasts on transponder code,LA44,AT25,0.7180485725402832
+6,warm,A,5,0.4545,The signal lamp housing takes fitting code,RG62,JP63,-0.25886964797973633
+6,warm,A,6,0.5455,The botanical specimen case holds accession number,TT97,VR44,-1.851567268371582
+6,warm,A,7,0.6364,Ansel's transit permit was issued as document number,DG82,VR94,2.021117687225342
+6,warm,A,8,0.7273,The mail packet from Vlissen came in pouch number,TY43,RR28,0.16442394256591797
+6,warm,A,9,0.8182,The lighthouse relief roster follows schedule,XV97,KW69,-1.362637996673584
+6,warm,A,10,0.9091,The harbour pilot's licence shows registration code,CP52,LM94,-0.4122891426086426
+6,warm,A,11,1.0,The hydrographic chart set reached edition,CM62,LW60,2.2891721725463867
+6,warm,B,0,0.0,The border checkpoint ledger opens at entry code,DG99,RZ30,15.644491540500894
+6,warm,B,1,0.0909,The glacier survey stake is recorded as marker,WK22,KT10,15.621764938114211
+6,warm,B,2,0.1818,The diesel storage tank is stencilled vessel number,BU35,FA88,18.06678073434159
+6,warm,B,3,0.2727,The coastal watchtower is designated post,WM72,UD97,18.784366572042927
+6,warm,B,4,0.3636,The eastern pumping station runs on circuit label,GS83,GE44,14.480889058439061
+6,warm,B,5,0.4545,The medical supply locker was closed with seal number,AW56,VA64,16.760428507695906
+6,warm,B,6,0.5455,The archive microfilm reel is filed under shelf mark,HV65,SR19,17.689809700474143
+6,warm,B,7,0.6364,The reserve fuel depot is listed at site code,KM85,RH22,19.360414406459313
+6,warm,B,8,0.7273,The customs declaration quotes reference code,DC74,MM28,18.587894384458195
+6,warm,B,9,0.8182,The sealed crate in the annex is marked with inventory tag,XS35,VL28,17.715385393123142
+6,warm,B,10,0.9091,The freight siding at Kelder appears on the plan as track,DV94,BW95,17.944821713026613
+6,warm,B,11,1.0,The seismograph at Ridge Camp reports as instrument,JK35,BW71,20.369636834599078
+6,mismatched,A,0,0.0,The radio operator's logbook continues in volume,UC72,CS64,-0.2058415412902832
+6,mismatched,A,1,0.0909,The winter supply manifest lists lot number,JB10,RK62,-0.10829782485961914
+6,mismatched,A,2,0.1818,The assay laboratory furnace is a model,EX85,CG97,0.7374839782714844
+6,mismatched,A,3,0.2727,The expedition's spare sledge carries equipment tag,RZ57,ZF12,-0.7455377578735352
+6,mismatched,A,4,0.3636,The meteorological buoy broadcasts on transponder code,LA44,AT25,0.7363567352294922
+6,mismatched,A,5,0.4545,The signal lamp housing takes fitting code,RG62,JP63,-0.15610408782958984
+6,mismatched,A,6,0.5455,The botanical specimen case holds accession number,TT97,VR44,-1.5187911987304688
+6,mismatched,A,7,0.6364,Ansel's transit permit was issued as document number,DG82,VR94,2.141679286956787
+6,mismatched,A,8,0.7273,The mail packet from Vlissen came in pouch number,TY43,RR28,0.19487285614013672
+6,mismatched,A,9,0.8182,The lighthouse relief roster follows schedule,XV97,KW69,-1.6990556716918945
+6,mismatched,A,10,0.9091,The harbour pilot's licence shows registration code,CP52,LM94,-0.48557043075561523
+6,mismatched,A,11,1.0,The hydrographic chart set reached edition,CM62,LW60,1.8999905586242676
+6,mismatched,B,0,0.0,The border checkpoint ledger opens at entry code,DG99,RZ30,15.860442102421075
+6,mismatched,B,1,0.0909,The glacier survey stake is recorded as marker,WK22,KT10,15.963388044619933
+6,mismatched,B,2,0.1818,The diesel storage tank is stencilled vessel number,BU35,FA88,18.618270331528038
+6,mismatched,B,3,0.2727,The coastal watchtower is designated post,WM72,UD97,18.649826163076796
+6,mismatched,B,4,0.3636,The eastern pumping station runs on circuit label,GS83,GE44,15.907052289810963
+6,mismatched,B,5,0.4545,The medical supply locker was closed with seal number,AW56,VA64,16.91627813235391
+6,mismatched,B,6,0.5455,The archive microfilm reel is filed under shelf mark,HV65,SR19,17.22058880259283
+6,mismatched,B,7,0.6364,The reserve fuel depot is listed at site code,KM85,RH22,18.276332463079598
+6,mismatched,B,8,0.7273,The customs declaration quotes reference code,DC74,MM28,18.323775820375886
+6,mismatched,B,9,0.8182,The sealed crate in the annex is marked with inventory tag,XS35,VL28,17.542860777582973
+6,mismatched,B,10,0.9091,The freight siding at Kelder appears on the plan as track,DV94,BW95,17.504556617350318
+6,mismatched,B,11,1.0,The seismograph at Ridge Camp reports as instrument,JK35,BW71,20.438064613379538
+7,cold,A,0,0.0,The seismograph at Ridge Camp reports as instrument,LE60,DR17,-0.7633228302001953
+7,cold,A,1,0.0909,The winter supply manifest lists lot number,WB19,GK26,1.020418643951416
+7,cold,A,2,0.1818,The border checkpoint ledger opens at entry code,TD56,NR20,0.7809019088745117
+7,cold,A,3,0.2727,The lighthouse relief roster follows schedule,UB74,TJ27,-0.7351474761962891
+7,cold,A,4,0.3636,Ansel's transit permit was issued as document number,GB21,PT45,-1.3879401683807373
+7,cold,A,5,0.4545,The survey team's theodolite bears serial number,PP18,EC32,-0.17591190338134766
+7,cold,A,6,0.5455,The glacier survey stake is recorded as marker,HC80,EH94,-0.4396982192993164
+7,cold,A,7,0.6364,The sealed crate in the annex is marked with inventory tag,PB82,HA72,0.4002957344055176
+7,cold,A,8,0.7273,The quartermaster's tally sheet uses form number,DH90,UF43,-0.9105138778686523
+7,cold,A,9,0.8182,The telegraph repeater hut answers to station code,BH15,PT57,-1.0767159461975098
+7,cold,A,10,0.9091,The mail packet from Vlissen came in pouch number,TE47,VW96,1.1632041931152344
+7,cold,A,11,1.0,The freight siding at Kelder appears on the plan as track,PE79,XT60,0.7870264053344727
+7,cold,B,0,0.0,The shipment of core samples travelled under consignment code,DU49,NN60,18.97600458213128
+7,cold,B,1,0.0909,The coastal watchtower is designated post,TX33,DR91,16.833042032259982
+7,cold,B,2,0.1818,The salvage tender was registered with hull number,DU83,NB34,16.384013560367748
+7,cold,B,3,0.2727,The diesel storage tank is stencilled vessel number,WG57,CG66,14.254347964655608
+7,cold,B,4,0.3636,The archive microfilm reel is filed under shelf mark,DT18,FD53,16.085272458847612
+7,cold,B,5,0.4545,The botanical specimen case holds accession number,UB89,VB23,12.820351923117414
+7,cold,B,6,0.5455,The radio operator's logbook continues in volume,GR97,AU29,17.830106978537515
+7,cold,B,7,0.6364,The ice core drilling rig was delivered as unit,TP50,VA19,19.32494640047662
+7,cold,B,8,0.7273,The customs declaration quotes reference code,QU68,GV58,16.92134075134527
+7,cold,B,9,0.8182,The signal lamp housing takes fitting code,MK41,EW42,19.60636845906265
+7,cold,B,10,0.9091,The eastern pumping station runs on circuit label,FY41,MV56,17.696867246355396
+7,cold,B,11,1.0,The winter quarters roof panel came from batch,CU48,RD24,14.723218166269362
+7,warm,A,0,0.0,The seismograph at Ridge Camp reports as instrument,LE60,DR17,-0.1985621452331543
+7,warm,A,1,0.0909,The winter supply manifest lists lot number,WB19,GK26,0.014157772064208984
+7,warm,A,2,0.1818,The border checkpoint ledger opens at entry code,TD56,NR20,0.6521053314208984
+7,warm,A,3,0.2727,The lighthouse relief roster follows schedule,UB74,TJ27,-2.508389472961426
+7,warm,A,4,0.3636,Ansel's transit permit was issued as document number,GB21,PT45,-0.7220554351806641
+7,warm,A,5,0.4545,The survey team's theodolite bears serial number,PP18,EC32,-0.4412045478820801
+7,warm,A,6,0.5455,The glacier survey stake is recorded as marker,HC80,EH94,-0.2250804901123047
+7,warm,A,7,0.6364,The sealed crate in the annex is marked with inventory tag,PB82,HA72,0.10747241973876953
+7,warm,A,8,0.7273,The quartermaster's tally sheet uses form number,DH90,UF43,-0.30651187896728516
+7,warm,A,9,0.8182,The telegraph repeater hut answers to station code,BH15,PT57,-1.606308937072754
+7,warm,A,10,0.9091,The mail packet from Vlissen came in pouch number,TE47,VW96,1.457089900970459
+7,warm,A,11,1.0,The freight siding at Kelder appears on the plan as track,PE79,XT60,0.7809600830078125
+7,warm,B,0,0.0,The shipment of core samples travelled under consignment code,DU49,NN60,17.088500883895904
+7,warm,B,1,0.0909,The coastal watchtower is designated post,TX33,DR91,17.79665009304881
+7,warm,B,2,0.1818,The salvage tender was registered with hull number,DU83,NB34,15.278474785387516
+7,warm,B,3,0.2727,The diesel storage tank is stencilled vessel number,WG57,CG66,14.797350264154375
+7,warm,B,4,0.3636,The archive microfilm reel is filed under shelf mark,DT18,FD53,14.564850501716137
+7,warm,B,5,0.4545,The botanical specimen case holds accession number,UB89,VB23,12.01474810950458
+7,warm,B,6,0.5455,The radio operator's logbook continues in volume,GR97,AU29,14.833773231133819
+7,warm,B,7,0.6364,The ice core drilling rig was delivered as unit,TP50,VA19,19.073083716677502
+7,warm,B,8,0.7273,The customs declaration quotes reference code,QU68,GV58,14.420357602182776
+7,warm,B,9,0.8182,The signal lamp housing takes fitting code,MK41,EW42,19.435554349794984
+7,warm,B,10,0.9091,The eastern pumping station runs on circuit label,FY41,MV56,18.024175987346098
+7,warm,B,11,1.0,The winter quarters roof panel came from batch,CU48,RD24,15.558131863363087
+7,mismatched,A,0,0.0,The seismograph at Ridge Camp reports as instrument,LE60,DR17,0.08683347702026367
+7,mismatched,A,1,0.0909,The winter supply manifest lists lot number,WB19,GK26,-0.13523530960083008
+7,mismatched,A,2,0.1818,The border checkpoint ledger opens at entry code,TD56,NR20,1.1325268745422363
+7,mismatched,A,3,0.2727,The lighthouse relief roster follows schedule,UB74,TJ27,-2.553238868713379
+7,mismatched,A,4,0.3636,Ansel's transit permit was issued as document number,GB21,PT45,-0.4427986145019531
+7,mismatched,A,5,0.4545,The survey team's theodolite bears serial number,PP18,EC32,-0.3296337127685547
+7,mismatched,A,6,0.5455,The glacier survey stake is recorded as marker,HC80,EH94,0.08248472213745117
+7,mismatched,A,7,0.6364,The sealed crate in the annex is marked with inventory tag,PB82,HA72,0.22646760940551758
+7,mismatched,A,8,0.7273,The quartermaster's tally sheet uses form number,DH90,UF43,-0.15469074249267578
+7,mismatched,A,9,0.8182,The telegraph repeater hut answers to station code,BH15,PT57,-2.206603527069092
+7,mismatched,A,10,0.9091,The mail packet from Vlissen came in pouch number,TE47,VW96,0.9104180335998535
+7,mismatched,A,11,1.0,The freight siding at Kelder appears on the plan as track,PE79,XT60,0.552281379699707
+7,mismatched,B,0,0.0,The shipment of core samples travelled under consignment code,DU49,NN60,15.491158794611692
+7,mismatched,B,1,0.0909,The coastal watchtower is designated post,TX33,DR91,17.21694770269096
+7,mismatched,B,2,0.1818,The salvage tender was registered with hull number,DU83,NB34,15.667142590507865
+7,mismatched,B,3,0.2727,The diesel storage tank is stencilled vessel number,WG57,CG66,13.802642929833382
+7,mismatched,B,4,0.3636,The archive microfilm reel is filed under shelf mark,DT18,FD53,13.855377746745944
+7,mismatched,B,5,0.4545,The botanical specimen case holds accession number,UB89,VB23,12.575038935057819
+7,mismatched,B,6,0.5455,The radio operator's logbook continues in volume,GR97,AU29,13.874993529170752
+7,mismatched,B,7,0.6364,The ice core drilling rig was delivered as unit,TP50,VA19,18.667039765394293
+7,mismatched,B,8,0.7273,The customs declaration quotes reference code,QU68,GV58,13.91899345931597
+7,mismatched,B,9,0.8182,The signal lamp housing takes fitting code,MK41,EW42,18.92384128784761
+7,mismatched,B,10,0.9091,The eastern pumping station runs on circuit label,FY41,MV56,17.50569826248102
+7,mismatched,B,11,1.0,The winter quarters roof panel came from batch,CU48,RD24,15.652946580434218
