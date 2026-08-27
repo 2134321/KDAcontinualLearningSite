@@ -81,6 +81,11 @@
   .sub { margin: 0; color: var(--ink-2); max-width: 65ch; font-size: 15px; }
   .deck { margin: 0 0 12px; font-size: 18px; line-height: 1.45; color: var(--ink-2);
     max-width: 60ch; text-wrap: balance; }
+  .status { display: flex; gap: 8px; align-items: flex-start; margin: 14px 0 0;
+    font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px;
+    line-height: 1.6; color: var(--muted); max-width: 68ch; }
+  .status::before { content: ""; flex: none; width: 7px; height: 7px; margin-top: 6px;
+    border-radius: 50%; background: var(--warm); }
 
   .headline {
     background: var(--surface); border: 1px solid var(--rule); border-radius: 10px;
@@ -165,6 +170,8 @@
     <p class="sub">Prefill document A, keep only the 40&nbsp;MiB KDA recurrent state, discard the
     KV and short-conv caches entirely, read a different document B, then ask about A. Three
     experiments, increasingly stringent.</p>
+    <p class="status">Active research project &mdash; results are still being refined and
+    further experiments may change the numbers below. Last updated 27 August 2026.</p>
   </header>
 
   <nav class="tabs" role="tablist" aria-label="Experiments">
@@ -502,15 +509,6 @@
     </ul>
   </section>
 
-  <footer>
-    <p style="margin:0 0 10px"><strong style="color:var(--ink-2)">Code, raw data and reproduction:</strong>
-    <a href="https://github.com/2134321/KDAcontinualLearningSite" style="color:var(--cold)">github.com/2134321/KDAcontinualLearningSite</a></p>
-    Kimi-Linear-48B-A3B-Base, bf16, single H200. 20 KDA layers, 7 full-attention (MLA) layers, NoPE.
-    Transplanted state is 40&nbsp;MiB in fp32 &mdash; twice the bf16 figure the original plan assumed.
-    Snapshot/restore verified bit-identical against a split-without-surgery control on the real
-    model with real Triton kernels.
-  </footer>
-
 </section>
   <section class="tabpanel" id="p-exp2" role="tabpanel" aria-labelledby="t-exp2" hidden>
   <div class="claimbox">
@@ -650,6 +648,15 @@
     </ul>
   </section>
 </section>
+  <footer>
+    <p style="margin:0 0 10px"><strong style="color:var(--ink-2)">Code, raw data and reproduction:</strong>
+    <a href="https://github.com/2134321/KDAcontinualLearningSite" style="color:var(--cold)">github.com/2134321/KDAcontinualLearningSite</a></p>
+    Kimi-Linear-48B-A3B-Base, bf16, single H200. 20 KDA layers, 7 full-attention (MLA) layers, NoPE.
+    Transplanted state is 40&nbsp;MiB in fp32 &mdash; twice the bf16 figure the original plan assumed.
+    Snapshot/restore verified bit-identical against a split-without-surgery control on the real
+    model with real Triton kernels.
+  </footer>
+
 </div>
 
 <script>

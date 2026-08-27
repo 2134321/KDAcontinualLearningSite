@@ -2,6 +2,9 @@
 
 **[Results page with charts →](https://2134321.github.io/KDAcontinualLearningSite/)**
 
+> **Active research project.** Results are still being refined and further experiments may
+> change the numbers here. Last updated 27 August 2026.
+
 **Does a Kimi Delta Attention recurrent state carry the document it came from, across a full KV
 cache reset?**
 
