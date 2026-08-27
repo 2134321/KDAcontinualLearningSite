@@ -79,6 +79,8 @@
   }
   h1 { font-size: 30px; line-height: 1.2; font-weight: 600; margin: 0 0 10px; text-wrap: balance; letter-spacing: -0.01em; }
   .sub { margin: 0; color: var(--ink-2); max-width: 65ch; font-size: 15px; }
+  .deck { margin: 0 0 12px; font-size: 18px; line-height: 1.45; color: var(--ink-2);
+    max-width: 60ch; text-wrap: balance; }
 
   .headline {
     background: var(--surface); border: 1px solid var(--rule); border-radius: 10px;
@@ -158,6 +160,8 @@
   <header>
     <p class="eyebrow">Kimi-Linear-48B-A3B-Base &middot; hybrid linear attention &middot; 20 KDA + 7 MLA layers</p>
     <h1>Does a transplanted KDA state carry the document it came from?</h1>
+    <p class="deck">Possible evidence for KDA-based continual learning &mdash; in a model
+    trained for it. This one wasn’t.</p>
     <p class="sub">Prefill document A, keep only the 40&nbsp;MiB KDA recurrent state, discard the
     KV and short-conv caches entirely, read a different document B, then ask about A. Three
     experiments, increasingly stringent.</p>
