@@ -205,7 +205,9 @@
     whether A was 1K tokens or 1M) and linear compute. For comparison, the MLA KV cache these runs
     discard would be roughly 7.9&nbsp;GB at 1M tokens.</p>
 
-    <p>The answer measured here is <strong>yes at short lengths, and no at useful ones</strong>. A 40&nbsp;MiB state does carry a real, replicable trace of A across a full cache reset. But the trace thins as the document grows and is undetectable by 16K tokens, while the cost of carrying it holds steady &mdash; so the regime where the technique would matter is the regime where it stops working. The tabs above give each measurement.</p>
+    <p>The answer measured here is <strong>yes at short lengths, and no at useful ones</strong>. A 40&nbsp;MiB state does carry a real, replicable trace of A across a full cache reset. But the trace thins as the document grows and is undetectable by 16K tokens, while the cost of carrying it holds steady, so past a few thousand tokens it costs more than it returns.</p>
+
+    <p><strong>Read that as a floor, not a ceiling.</strong> Every number here is zero-shot. The model has never seen a recurrent state arriving from somewhere else, and nothing in its training prepared it for a KV cache that disagrees with its KDA state about how far into a document it is. That document-specific information survives such a transplant <em>at all</em> is the surprising part. A training recipe that included state resets, or transplanted states as an objective, could plausibly change the picture entirely &mdash; <a href="https://wiki.rwkv.com/RWKV-Fine-Tuning/State-Tuning.html">RWKV State Tuning</a> already shows a <em>learned</em> initial state is a meaningful memory object in a related architecture. These experiments measure what a model does with a capability nobody trained it to have. The tabs above give each measurement.</p>
   </section>
   <div class="claimbox">
     <p><strong>Three experiments on one question:</strong> does the recurrent state of a hybrid
