@@ -101,7 +101,7 @@ document, so the comparison turns entirely on what is in the state.
 
 **Hardware:** one H200 (141 GB). The 48B bf16 weights are ~92 GB and this deliberately avoids
 quantization and tensor-parallel sharding, both of which would alter the object under study.
-About $4/hr; a full run is well under an hour after the download.
+A full run is well under an hour after the download.
 
 ```bash
 python -m venv ~/kda
