@@ -205,7 +205,7 @@
     whether A was 1K tokens or 1M) and linear compute. For comparison, the MLA KV cache these runs
     discard would be roughly 7.9&nbsp;GB at 1M tokens.</p>
 
-    <p>The answer measured here is <strong>yes at short lengths, and no at useful ones</strong>. A 40&nbsp;MiB state does carry a real, replicable trace of A across a full cache reset. But the trace thins as the document grows and is undetectable by 16K tokens, while the cost of carrying it holds steady, so past a few thousand tokens it costs more than it returns.</p>
+    <p>The answer measured here is <strong>yes at short lengths, and no at useful ones</strong> &mdash; with the state carried across unchanged. A 40&nbsp;MiB state does carry a real, replicable trace of A across a full cache reset. But the trace thins as the document grows and is undetectable by 16K tokens, while the cost of carrying it holds steady, so past a few thousand tokens it costs more than it returns.</p>
 
     <p><strong>Read that as a floor, not a ceiling.</strong> Every number here is zero-shot. The model has never seen a recurrent state arriving from somewhere else, and nothing in its training prepared it for a KV cache that disagrees with its KDA state about how far into a document it is. That document-specific information survives such a transplant <em>at all</em> is the surprising part. A training recipe that included state resets, or transplanted states as an objective, could plausibly change the picture entirely &mdash; <a href="https://wiki.rwkv.com/RWKV-Fine-Tuning/State-Tuning.html">RWKV State Tuning</a> already shows a <em>learned</em> initial state is a meaningful memory object in a related architecture. These experiments measure what a model does with a capability nobody trained it to have. The tabs above give each measurement.</p>
   </section>
@@ -240,12 +240,29 @@
     across a full cache reset, and it keeps doing so at every length tested. But that is a claim
     about what the state <em>contains</em>. Whether transplanting is <em>worth doing</em> is a
     different comparison &mdash; against carrying no state at all &mdash; and there
-    <strong>the answer turns negative between 1,500 and 4,000 tokens</strong>, because carrying
+    <strong>the answer turns negative between 1,500 and 4,000 tokens</strong> at the state's natural scale, because carrying
     any state has a cost that grows with document length while the memory it holds thins. Below the crossover the transplant helps but is dominated by simply pasting the text
     into context; above it the transplant leaves the model worse off than doing nothing. The
     strongest single number in the project is the cost, not the benefit: at 50,000 tokens a
     transplanted state is worth &minus;0.25 nats per token against no state at all, t = &minus;4.46,
     with every seed agreeing.</p>
+
+    <div class="claimbox" style="margin-top:20px">
+      <p><strong>Update, 1 September 2026.</strong> Everything above was measured with the state
+      carried across <em>unchanged</em>. Scaling it first changes the answer at length. At 50,000
+      tokens the untouched transplant is worth <strong>+0.009 nats</strong> against no state at
+      all &mdash; p&nbsp;=&nbsp;0.91, nothing. Multiplying the state by about 3 gives
+      <strong>+0.46 nats, t(23)&nbsp;=&nbsp;+4.15, p&nbsp;=&nbsp;0.0004</strong>, with 20 of 24
+      seeds agreeing: a document-specific effect at a length where the untouched version shows
+      none. So <em>some</em> of what a document contains does survive to a useful length &mdash;
+      it just does not survive at the magnitude the state naturally arrives in.</p>
+      <p>Two limits, both measured. It holds for the planted-fact probes of experiments 1 and 2
+      and <em>not</em> for experiment 3's unplanted prose, where scaling makes the result
+      monotonically worse at every value tried. And an oracle run &mdash; A and B read as one
+      uninterrupted sequence, so nothing is lost &mdash; puts the ceiling at +14.8 nats, which
+      places even the scaled transplant at about <strong>2.7% of what simply having the document
+      in context gives you</strong>.</p>
+    </div>
   </section>
 </section>
   <section class="tabpanel" id="p-exp1" role="tabpanel" aria-labelledby="t-exp1" hidden>
@@ -524,7 +541,7 @@
     <p><strong>Meanwhile the cost does not decay.</strong> Carrying a transplanted state
     damages performance on the document actually in context by about &minus;0.85 nats from 4K
     onward, and that figure is flat across a 12&times; range of lengths. Benefit falls, cost
-    holds &mdash; so past a few thousand tokens the transplant is worse than not doing it.</p>
+    holds &mdash; so past a few thousand tokens the transplant is worse than not doing it. That is measured with the state carried across unchanged; scaling it changes the answer at 50,000 tokens, see the update on the overview.</p>
   </div>
 
   <div class="legend"><span class="key"><i style="background:var(--cold)"></i>cold &mdash; no state</span><span class="key"><i style="background:var(--warm)"></i>warm &mdash; state from A</span><span class="key"><i style="background:var(--mismatched)"></i>mismatched &mdash; state from A2</span></div>
