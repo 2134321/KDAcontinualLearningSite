@@ -12,17 +12,18 @@ Yes — measurably, replicably, and faintly. Whether it is *worth doing* is a se
 question, and past a few thousand tokens the answer is no. Both results are below.
 
 ```
-warm - mismatched     +10.1 accuracy points   95% CI [+6.3, +13.5]     <- document-specific?
-                      +0.396 nats             95% CI [+0.326, +0.467]
+warm - mismatched     +10.1 accuracy points   95% CI [+6.6, +13.5]     <- document-specific?
+                      +0.396 nats             95% CI [+0.341, +0.452]
                       t(23) = 13.53,  24 of 24 seeds positive
 
 warm - cold           +8.0 accuracy points    95% CI [+1.7, +13.9]     <- worth doing?
-                      +0.393 nats             95% CI [+0.300, +0.487]
+                      +0.393 nats             95% CI [+0.319, +0.470]
 ```
 
 Prefill document A. Keep only the 40 MiB KDA recurrent state. Throw away the MLA KV cache and the
 short-conv states entirely. Read a different document B. Then ask about facts that were only ever
-in A. The model does better than it has any right to — about eight accuracy points over chance on
+in A. The model does better than it has any right to — about eight accuracy points over the
+no-transplant baseline (6.6 over chance) on
 a two-way forced choice.
 
 That is **not retrieval**. You cannot look up a value; you can detect a bias toward it across
@@ -49,7 +50,8 @@ If `S` is weights, then `S` is a checkpoint. This repo tests whether that checkp
 moved into a fresh run.
 
 The prize, if it works well: context that never stops accumulating, at **constant memory** — the
-state is 40 MiB whether A was 1K tokens or 1M — against the ~7.9 GB the MLA KV cache would occupy
+state is 40 MiB whether A was 1K tokens or 1M — against the ~143 GB the expanded MLA KV cache
+would occupy
 at 1M tokens.
 
 ---
@@ -92,8 +94,10 @@ wrong    " KT19"     <- appeared nowhere
 margin = log P(correct) - log P(wrong)
 ```
 
-Chance is exactly 0. Both candidates come from the same generator and neither appears in any
-document, so the comparison turns entirely on what is in the state.
+Chance is exactly 0. Both candidates come from the same generator. The correct value is
+planted in document A — that is what the state is supposed to carry — and the distractor
+appears in no document at all. Neither appears in B, the document actually in context, so at
+test time the comparison turns entirely on what is in the state.
 
 ---
 
@@ -191,6 +195,9 @@ The headline above is a single document length: 600 tokens of synthetic carrier 
 experiments on the [results page](https://2134321.github.io/KDAcontinualLearningSite/) grow
 document A on post-cutoff Wikipedia from 600 to 50,000 tokens, and the picture changes.
 
+**Experiment 3 — sentence completion on unmodified prose, nats/token.** (Experiment 2
+measures planted-fact margins, a different quantity.)
+
 | \|A\| | `warm − cold` (benefit) | t(7) | `warm − mism` (specificity) | t(7) |
 |---|---|---|---|---|
 | 600 | +0.038 | +4.77 | +0.054 | +2.20 |
@@ -199,7 +206,9 @@ document A on post-cutoff Wikipedia from 600 to 50,000 tokens, and the picture c
 | 16,000 | −0.125 | −2.58 | +0.018 | +0.54 |
 | 50,000 | −0.253 | −4.46 | +0.009 | +1.36 |
 
-nats/token, 8 seeds per length. Document-specificity stays positive at every length tested. The
+nats/token, 8 seeds per length. Document-specificity stays positive at every length tested,
+but small and uncertain: per-seed two-sided p is 0.063, 0.048, 0.352, 0.608, 0.216, so only
+the 1,500 point clears 0.05 and it does not survive correcting for five lengths. The
 **benefit does not** — it crosses zero between 1,500 and 4,000 tokens, because the cost of
 carrying *any* state (`mismatched − cold`) grows with length while the document-specific signal
 thins. At 50,000 tokens the transplant is worse than not doing it: −0.253 nats/token, t = −4.46,
@@ -305,12 +314,12 @@ same way and Bonferroni-corrects across the &alpha; grid.
 
 | condition | facts | mean margin (nats) | 95% CI | accuracy |
 |---|---|---|---|---|
-| cold | A | −0.083 | [−0.228, +0.060] | 0.486 |
-| warm | A | **+0.310** | [+0.157, +0.463] | **0.566** |
-| mismatched | A | −0.087 | [−0.237, +0.063] | 0.465 |
-| cold | B | +17.330 | [17.099, 17.564] | 1.00 |
-| warm | B | +18.206 | [17.977, 18.442] | 1.00 |
-| mismatched | B | +18.218 | [17.986, 18.451] | 1.00 |
+| cold | A | −0.083 | [−0.207, +0.041] | 0.486 |
+| warm | A | **+0.310** | [+0.167, +0.446] | **0.566** |
+| mismatched | A | −0.087 | [−0.218, +0.040] | 0.465 |
+| cold | B | +17.330 | [16.959, 17.693] | 1.00 |
+| warm | B | +18.206 | [17.875, 18.533] | 1.00 |
+| mismatched | B | +18.218 | [17.881, 18.537] | 1.00 |
 
 24 seeds × 12 facts = 288 paired observations. CIs bootstrapped over seeds, not items — items
 within a seed share a state and a document and are not independent.

@@ -49,10 +49,21 @@ def margins(ctx, cache, facts):
 
 
 def boot_ci(xs, n=10000, seed=0):
+    """Percentile bootstrap. NOTE: resamples by index against a fixed RNG, so the interval
+    depends on the ORDER of xs. Always pass seed-ordered values, or two runs over the same
+    numbers disagree in the third decimal."""
     rng = random.Random(seed)
     k = len(xs)
     means = sorted(sum(rng.choice(xs) for _ in range(k)) / k for _ in range(n))
     return means[int(0.025 * n)], means[int(0.975 * n)]
+
+
+def by_seed(xs, k):
+    """One mean per seed. Items inside a seed share a document and a transplanted state, so they
+    are not independent -- bootstrapping the flat item list would understate the interval by
+    treating 288 correlated observations as 288 draws. xs accumulates k items at a time in seed
+    order, so plain chunking recovers the seeds."""
+    return [sum(xs[i:i + k]) / k for i in range(0, len(xs), k)]
 
 
 def main():
@@ -105,13 +116,16 @@ def main():
         print(f"seed {seed}: acc cold={acc(m_cold):.2f} warm={acc(m_warm):.2f} "
               f"mism={acc(m_mism):.2f} | mean warm-mism = {sum(wm[-k:])/k:+.4f}", flush=True)
 
-    print("\n=== the six bars: mean margin (nats), 95% bootstrap CI ===")
+    NF = len(wm) // len(SEEDS)          # facts per document, for seed-level aggregation
+
+    print(f"\n=== the six bars: mean margin (nats), 95% CI over {len(SEEDS)} seeds ===")
     bars = {}
     for (cond, label), xs in raw.items():
-        lo, hi = boot_ci(xs)
+        per_seed = by_seed(xs, NF)
+        lo, hi = boot_ci(per_seed)
         acc = sum(x > 0 for x in xs) / len(xs)
         bars[f"{cond}|{label}"] = {"mean": sum(xs) / len(xs), "lo": lo, "hi": hi,
-                                   "acc": acc, "n": len(xs)}
+                                   "acc": acc, "n": len(per_seed)}
         print(f"  {cond:11s} on {label}-facts  mean = {sum(xs)/len(xs):+8.4f}  "
               f"CI [{lo:+.4f}, {hi:+.4f}]  acc = {acc:.2f}")
     import json
@@ -124,14 +138,16 @@ def main():
     print(f"  wrote bars.json and per_item.csv ({len(rows)} rows)")
 
     n = len(wm)
-    print(f"\n=== {len(SEEDS)} seeds x 12 facts = {n} paired observations ===")
+    print(f"\n=== {len(SEEDS)} seeds x {NF} facts = {n} paired observations ===")
+    print(f"    CIs are bootstrapped over the {len(SEEDS)} seed means, not the {n} items.")
     for name, xs in (("warm - mismatched  (HEADLINE)", wm),
                      ("warm - cold", wc),
                      ("mismatched - cold", mc)):
-        lo, hi = boot_ci(xs)
-        pos = sum(x > 0 for x in xs)
+        per_seed = by_seed(xs, NF)
+        lo, hi = boot_ci(per_seed)
         print(f"{name:32s} mean = {sum(xs)/n:+.4f}   95% CI [{lo:+.4f}, {hi:+.4f}]   "
-              f"{pos}/{n} positive")
+              f"{sum(x > 0 for x in per_seed)}/{len(per_seed)} seeds, "
+              f"{sum(x > 0 for x in xs)}/{n} items positive")
 
     print("\ndepth profile of warm - mismatched:")
     for lo_d, hi_d in ((0.0, 1 / 3), (1 / 3, 2 / 3), (2 / 3, 1.01)):
@@ -140,9 +156,9 @@ def main():
             print(f"  depth {lo_d:.2f}-{hi_d:.2f}  n={len(sel):3d}  "
                   f"mean = {sum(sel)/len(sel):+.4f}")
 
-    lo, hi = boot_ci(wm)
-    print("\nVERDICT:", "document-specific transfer (CI excludes 0)" if lo > 0 else
-          "NOT significant -- CI includes 0")
+    lo, hi = boot_ci(by_seed(wm, NF))
+    print("\nVERDICT:", "document-specific transfer (seed-level CI excludes 0)" if lo > 0 else
+          "NOT significant -- seed-level CI includes 0")
     return 0
 
 

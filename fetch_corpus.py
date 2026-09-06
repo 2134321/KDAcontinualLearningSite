@@ -1,5 +1,9 @@
 """
-Build a carrier corpus the model provably has not been trained on.
+Build a carrier corpus from pages created after the model's training cutoff.
+
+Creation date is a proxy, not a proof: a page created in 2026 can still reuse older text,
+so treat this as 'unlikely to have been memorised', not 'provably unseen'. The paired
+cold/warm/mismatched design does not depend on the stronger claim.
 
 Kimi-Linear was released 2025-10. Anything written in 2026 is therefore new to it. This pulls
 Wikipedia articles CREATED in 2026 -- not merely about 2026 -- via the recentchanges API, so the
@@ -30,7 +34,8 @@ import urllib.request
 API = "https://en.wikipedia.org/w/api.php"
 UA = "KDA-continual-learning-research/1.0 (https://github.com/2134321/KDAcontinualLearningSite)"
 
-# 2026-01-01. Articles created after this are necessarily unseen by an Oct-2025 model.
+# 2026-01-01. Articles created after this postdate an Oct-2025 model's training data, though
+# their text can still quote or reuse older sources -- see the module docstring.
 CUTOFF = "2026-01-01T00:00:00Z"
 
 
