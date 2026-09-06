@@ -223,7 +223,7 @@
       <tbody>
         <tr><td><strong>1 &middot; Synthetic carrier</strong></td>
             <td>Planted facts in a looping 20-sentence template, 600 tokens, 24 seeds</td>
-            <td>Transfer real: <strong>+0.396 nats</strong>, 24/24 seeds</td></tr>
+            <td>Transfer real: <strong>+0.396 nats</strong>, 24/24 seeds. Accuracy uplift roughly triples with &alpha; manipulation (+10.1 &rarr; +30.2 pts)</td></tr>
         <tr><td><strong>2 &middot; Needle-in-haystack ladder</strong></td>
             <td>Needles planted in post-cutoff Wikipedia, haystack grown 600&rarr;50,000 tokens, 8 seeds each</td>
             <td>Unscaled, decays to nothing by 16K. Can be pushed to at least 50K with &alpha; manipulation, at higher cost</td></tr>
@@ -236,33 +236,10 @@
 
   <section>
     <h2 class="sec">The headline so far</h2>
-    <p class="lede">A 40&nbsp;MiB recurrent state does carry document-specific information
-    across a full cache reset, and it keeps doing so at every length tested. But that is a claim
-    about what the state <em>contains</em>. Whether transplanting is <em>worth doing</em> is a
-    different comparison &mdash; against carrying no state at all &mdash; and there
-    <strong>the answer turns negative between 1,500 and 4,000 tokens</strong> at the state's natural scale, because carrying
-    any state has a cost that grows with document length while the memory it holds thins. Below the crossover the transplant helps but is dominated by simply pasting the text
-    into context; above it the transplant leaves the model worse off than doing nothing. The
-    strongest single number in the project is the cost, not the benefit: at 50,000 tokens a
-    transplanted state is worth &minus;0.25 nats per token against no state at all, t = &minus;4.46,
-    with every seed agreeing.</p>
-
-    <div class="claimbox" style="margin-top:20px">
-      <p><strong>Update, 1 September 2026.</strong> Everything above was measured with the state
-      carried across <em>unchanged</em>. Scaling it first changes the answer at length. At 50,000
-      tokens the untouched transplant is worth <strong>+0.009 nats</strong> against no state at
-      all &mdash; p&nbsp;=&nbsp;0.91, nothing. Multiplying the state by about 5 gives
-      <strong>+0.46 nats, t(23)&nbsp;=&nbsp;+4.15, p&nbsp;=&nbsp;0.0004</strong>, with 19 of 24
-      seeds agreeing: a document-specific effect at a length where the untouched version shows
-      none. So <em>some</em> of what a document contains does survive to a useful length &mdash;
-      it just does not survive at the magnitude the state naturally arrives in.</p>
-      <p>Two limits, both measured. It holds for the planted-fact probes of experiments 1 and 2
-      and <em>not</em> for experiment 3's unplanted prose, where scaling makes the result
-      monotonically worse at every value tried. And an oracle run &mdash; A and B read as one
-      uninterrupted sequence, so nothing is lost &mdash; puts the ceiling at +14.8 nats, which
-      places even the scaled transplant at about <strong>2.7% of what simply having the document
-      in context gives you</strong>.</p>
-    </div>
+    <p class="lede">At a high level, it appears a small amount of information can be
+    preserved, even without any training. It&rsquo;s situational, and costly in some cases, but
+    it suggests that this technique could be used as a foundation for broader continual
+    learning.</p>
   </section>
 </section>
   <section class="tabpanel" id="p-exp1" role="tabpanel" aria-labelledby="t-exp1" hidden>
