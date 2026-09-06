@@ -471,10 +471,15 @@
       at about &minus;0.85 nats from 4K onward &mdash; flat across a 12&times; range of lengths.
       Past a few thousand tokens the transplant is worse than not doing it.</li>
 
-      <li><strong>Scaling recovers it at 50,000 tokens.</strong> &alpha;&nbsp;=&nbsp;1 gives
-      +0.009 nats, p&nbsp;=&nbsp;0.91. &alpha;&nbsp;&asymp;&nbsp;5 gives <strong>+0.46,
-      t(23)&nbsp;=&nbsp;+4.15, p&nbsp;=&nbsp;0.0004</strong>, 19 of 24 seeds &mdash; measured on
-      24 seeds against the ladder&rsquo;s 8.</li>
+      <li><strong>Scaling recovers it at 50,000 tokens, on both contrasts.</strong> The
+      benefit first: <code>warm &minus; cold</code> is +0.009 nats at &alpha;&nbsp;=&nbsp;1
+      (p&nbsp;=&nbsp;0.91) and <strong>+0.46 at &alpha;&nbsp;&asymp;&nbsp;5,
+      t(23)&nbsp;=&nbsp;+4.15, p&nbsp;=&nbsp;0.0004</strong>, 19 of 24 seeds. Document-specificity
+      returns too, peaking slightly earlier: <code>warm &minus; mismatched</code> is
+      <strong>+0.38 at &alpha;&nbsp;=&nbsp;3, t(23)&nbsp;=&nbsp;+3.94,
+      p&nbsp;=&nbsp;0.0007</strong>, 21 of 24 seeds, and stays significant at every &alpha;
+      through 6 &mdash; a plateau rather than one lucky setting. Both are measured on 24 seeds
+      against the ladder&rsquo;s 8.</li>
 
       <li><strong>In decisions rather than confidence, the cost nearly vanishes.</strong> At
       50,000 tokens, &alpha;&nbsp;=&nbsp;4 gains <strong>+7.64 accuracy points</strong> on
