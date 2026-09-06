@@ -264,12 +264,14 @@
   <div class="claimbox">
     <p><strong>What the claim rests on.</strong> Knowledge acquired from data A persists across a
     full cache reset and changes later behaviour &mdash; training-free, at inference time. It is
-    specific to A rather than generic (the mismatched control is flat), and it costs nothing on the
-    document actually in context.</p>
-    <p><strong>What &ldquo;limited&rdquo; rules out.</strong> Accuracy is 0.566 against 0.486
-    chance. You cannot look up a planted value; you can only detect a bias toward it across
-    hundreds of trials. This is evidence for a <em>mechanism</em>, not a usable capability, and it
-    is measured on synthetic planted facts in ~470-word documents on one model.</p>
+    specific to A rather than generic: the mismatched control stays flat at every scale tested.</p>
+    <p><strong>What &ldquo;limited&rdquo; rules out.</strong> At the state&rsquo;s natural scale
+    the lift is about ten accuracy points over chance. Scaling the state triples that &mdash;
+    <strong>+30.2 points at &alpha;&nbsp;&asymp;&nbsp;3</strong>, 0.78 of items correct against a
+    cold baseline of 0.48 &mdash; but the gain is bought rather than free: the same scaling turns
+    a gain on the document actually in context into a loss, +0.89&nbsp;nats at
+    &alpha;&nbsp;=&nbsp;1 against &minus;0.81 at &alpha;&nbsp;=&nbsp;3. And it is measured on
+    synthetic planted facts in ~470-word documents, on one model.</p>
   </div>
 
   <p class="sub" style="margin-top:-14px">Significance is quoted at the <em>seed</em> level, one
@@ -472,13 +474,14 @@
   <section>
     <h2 class="sec">What this does not show</h2>
     <ul class="caveats">
-      <li><strong>The B panel rules out gross corruption, but not mild degradation.</strong>
-      Accuracy is pinned at 100% in all three conditions and cannot fall further &mdash; but the
-      margin is not ceiling-bound. It could have dropped from +17 nats to +5 and still shown
-      perfect accuracy. It rose instead, 17.33 cold to 18.21 warm &mdash; and warm and mismatched are identical there (18.206 vs 18.218), so that lift is generic, not document-specific. So a transplanted state does
-      not make the model incoherent, and the position-collision worry does not show up here.
-      What this task cannot speak to is harder capabilities it never exercises &mdash; multi-step
-      reasoning, long-range dependency &mdash; where a subtler cost could hide.</li>
+      <li><strong>Cost grows with larger &alpha;.</strong> At the natural scale the state
+      is not merely harmless on the document in context &mdash; the margin there <em>rises</em>,
+      17.38 to 18.27 nats. By &alpha;&nbsp;=&nbsp;3 it has fallen below cold, and by
+      &alpha;&nbsp;=&nbsp;12 accuracy finally leaves 1.00 (0.9931), the first time in this project
+      that measure has moved at all. So the benefit above is paid for, and the price rises faster
+      than the benefit past &alpha;&nbsp;&asymp;&nbsp;4. What this task still cannot speak to is
+      harder capabilities it never exercises &mdash; multi-step reasoning, long-range dependency
+      &mdash; where a subtler cost could hide.</li>
       <li><strong>&ldquo;Document-specific&rdquo; means fact-specific.</strong> A2 shares roughly
       45% of its carrier sentences with A, because both sample the same filler pool. That makes the
       control <em>tighter</em> than a generic one &mdash; the effect cannot be explained by A&rsquo;s
@@ -486,21 +489,20 @@
       narrows the claim: what survives the transplant is information about the planted facts, over
       and above near-identical prose. An unrelated-prose A2 would support a broader claim on weaker
       control.</li>
-      <li><strong>This is not retrieval.</strong> Warm accuracy on A-facts is 0.566 against 0.486
-      chance &mdash; an eight-point lift on a coin flip. The state carries a detectable trace of
-      A, not A&rsquo;s contents. You could not look up a planted value with this.</li>
-      <li><strong>The depth effect runs backwards.</strong> Facts from the <em>start</em>
-      of A &mdash; the ones the forget gates have had longest to decay &mdash; transfer best, and it
-      is significant: clustered by seed (early third minus late third, one value per seed) that is
-      +0.320 nats, t(23) = 2.74, p &asymp; 0.012, 15 of 24 seeds. The naive item-level test gives
-      r = &minus;0.218, t(286) = &minus;3.77, but treats 12 items sharing a state as independent
-      &mdash; do not quote it. The shape is a sharp fall over the first third then a plateau, which
-      looks like primacy rather than decay: facts written into a nearly-empty state may simply get
-      a larger share of it. That is a guess, not a result &mdash; this experiment was not built to
-      test it.</li>
-      <li><strong>No ceiling condition was run.</strong> Without an Oracle arm &mdash; A and B as
-      one uninterrupted sequence &mdash; there is no way to say what fraction of the available
-      signal the 40&nbsp;MiB state preserves.</li>
+      <li><strong>The depth effect runs backwards, and scaling sharpens it.</strong>
+      Facts from the start of A &mdash; the ones the forget gates have had longest to decay
+      &mdash; transfer best, at every scale where there is signal to measure. Clustered by seed
+      (early third minus late third, one value per seed) that is +0.289 nats, p&nbsp;=&nbsp;0.023
+      at &alpha;&nbsp;=&nbsp;1, rising to <strong>+0.975, t(23)&nbsp;=&nbsp;+3.99,
+      p&nbsp;=&nbsp;0.0006, 20 of 24 seeds</strong> at &alpha;&nbsp;=&nbsp;4. The shape is a sharp
+      fall over the first third then a plateau, which looks like primacy rather than decay: facts
+      written into a nearly-empty state may simply get a larger share of it. That is a guess, not
+      a result &mdash; this experiment was not built to test it.</li>
+      <li><strong>The ceiling is measured, but not at this length.</strong> An oracle
+      run &mdash; A and B read as one uninterrupted sequence, so nothing is lost &mdash; puts the
+      scaled transplant at about 2.7% of what simply having the document in context gives you.
+      That was measured at 50,000 tokens. Experiment 1&rsquo;s own 600-token ceiling has not been
+      run, so the fraction preserved <em>here</em> is still unknown.</li>
     </ul>
   </section>
 
