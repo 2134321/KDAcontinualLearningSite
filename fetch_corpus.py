@@ -5,9 +5,11 @@ Creation date is a proxy, not a proof: a page created in 2026 can still reuse ol
 so treat this as 'unlikely to have been memorised', not 'provably unseen'. The paired
 cold/warm/mismatched design does not depend on the stronger claim.
 
-Kimi-Linear was released 2025-10. Anything written in 2026 is therefore new to it. This pulls
-Wikipedia articles CREATED in 2026 -- not merely about 2026 -- via the recentchanges API, so the
-prose itself is post-cutoff regardless of subject.
+Kimi-Linear was released 2025-10. This pulls Wikipedia articles CREATED in 2026 -- not merely
+about 2026 -- via the recentchanges API, so the page postdates the model rather than merely
+describing recent events. The wording of a 2026 page can still be copied or paraphrased from
+older sources, so this selects for text unlikely to have been memorised, not text guaranteed
+to be unseen.
 
 Why it matters: the original carrier was 20 sentences on a loop. At 100K tokens each would repeat
 ~3,750 times, and that repetition would dominate the recurrent state far more than any planted

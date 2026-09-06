@@ -394,10 +394,10 @@
       </thead>
       <tbody>
         <tr><td><i class="swatch" style="background:var(--cold)"></i>cold</td><td>A</td><td class="num">&minus;0.083</td><td class="num">[&minus;0.207, +0.041]</td><td class="num">0.486</td></tr>
-        <tr><td><i class="swatch" style="background:var(--warm)"></i>warm</td><td>A</td><td class="num">+0.310</td><td class="num">[+0.167, +0.446]</td><td class="num">0.566</td></tr>
+        <tr><td><i class="swatch" style="background:var(--warm)"></i>warm</td><td>A</td><td class="num">+0.310</td><td class="num">[+0.167, +0.445]</td><td class="num">0.566</td></tr>
         <tr><td><i class="swatch" style="background:var(--mismatched)"></i>mismatched</td><td>A</td><td class="num">&minus;0.087</td><td class="num">[&minus;0.218, +0.040]</td><td class="num">0.465</td></tr>
         <tr><td><i class="swatch" style="background:var(--cold)"></i>cold</td><td>B</td><td class="num">+17.330</td><td class="num">[16.959, 17.693]</td><td class="num">1.00</td></tr>
-        <tr><td><i class="swatch" style="background:var(--warm)"></i>warm</td><td>B</td><td class="num">+18.206</td><td class="num">[17.875, 18.533]</td><td class="num">1.00</td></tr>
+        <tr><td><i class="swatch" style="background:var(--warm)"></i>warm</td><td>B</td><td class="num">+18.206</td><td class="num">[17.874, 18.533]</td><td class="num">1.00</td></tr>
         <tr><td><i class="swatch" style="background:var(--mismatched)"></i>mismatched</td><td>B</td><td class="num">+18.218</td><td class="num">[17.881, 18.537]</td><td class="num">1.00</td></tr>
       </tbody>
     </table>
@@ -596,7 +596,7 @@
     <ul class="caveats">
       <li><strong>The cost is the solid finding.</strong> warm &minus; cold at 50K is
       &minus;0.253 nats/token with t = &minus;4.46 and 8 of 8 seeds agreeing. By contrast
-      warm &minus; mismatched only clears the per-seed test at 600 and 1,500. The evidence that
+      only the 1,500-token point clears the nominal two-sided 5% per-seed test for <code>warm &minus; mismatched</code> (p&nbsp;=&nbsp;0.048), and it does not survive correcting for five lengths; 600 is p&nbsp;=&nbsp;0.063. The evidence that
       carrying a state hurts is much stronger than any evidence that it helps.</li>
       <li><strong>Specificity is uncertain; the long-document cost is not.</strong> warm stays
       above mismatched at every length including 50K, but the gap is small and clears a per-seed

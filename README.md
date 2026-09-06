@@ -38,13 +38,18 @@ constant-size recurrent state) with 7 full-attention MLA layers in a fixed 3:1 r
 the KDA state update is
 
 ```
-S_t = S_{t-1}(I - β_t k_t k_tᵀ) + β_t v_t k_tᵀ
+S_t = S_{t-1} Diag(a_t)(I - β_t k_t k_tᵀ) + β_t v_t k_tᵀ
 ```
 
-which is exactly one step of online gradient descent on `½‖S k_t − v_t‖²`, with `β_t` as the
-learning rate. The recurrent state is not a cache of past activations — it is a set of **fast
+Two things happen per token. `Diag(a_t)` is KDA's per-channel decay — the gate that separates it
+from an ungated delta rule, and from Gated DeltaNet's single scalar forget gate. (This `a_t` is the
+architecture's forget gate, unrelated to the scale factor α used in the alpha sweep.) What follows
+the decay is exactly one step of online gradient descent on `½‖S k_t − v_t‖²`, with `β_t` as the
+learning rate. So the recurrent state is not a cache of past activations — it is a set of **fast
 weights trained by gradient descent during the forward pass**
-([Irie & Schmidhuber](https://arxiv.org/abs/2508.08435)).
+([Schlag, Irie & Schmidhuber, ICML 2021](https://proceedings.mlr.press/v139/schlag21a.html); see
+also [Irie & Gershman 2025](https://arxiv.org/abs/2508.08435)). The equation follows the Kimi
+paper's [eq. 1](https://arxiv.org/abs/2510.26692), transposed to this orientation for `S`.
 
 If `S` is weights, then `S` is a checkpoint. This repo tests whether that checkpoint survives being
 moved into a fresh run.
@@ -80,7 +85,7 @@ whether doing it helps at all. `warm − mismatched` is the *document-specificit
 arms carry a real transplanted state of identical size and origin, so only this one can show the
 state holds information about *this* document rather than a generic effect of carrying any state.
 At 600 tokens the two nearly coincide, because that generic effect is nil (`mismatched − cold` =
-−0.003 nats, CI [−0.092, +0.087]). They come apart badly at length — see below.
+−0.003 nats, CI [−0.097, +0.089]). They come apart badly at length — see below.
 
 ### Scoring
 
@@ -94,7 +99,8 @@ wrong    " KT19"     <- appeared nowhere
 margin = log P(correct) - log P(wrong)
 ```
 
-Chance is exactly 0. Both candidates come from the same generator. The correct value is
+Zero margin is the decision boundary, and random choice between two candidates is 0.5
+accuracy. Both candidates come from the same generator. The correct value is
 planted in document A — that is what the state is supposed to carry — and the distractor
 appears in no document at all. Neither appears in B, the document actually in context, so at
 test time the comparison turns entirely on what is in the state.
@@ -223,7 +229,7 @@ Kimi Linear's training prepared it for a transplanted state. This is a floor, no
 
 ## What this does not show
 
-- **Not retrieval.** 0.566 accuracy against 0.486 chance.
+- **Not retrieval.** 0.566 accuracy against a 0.486 cold baseline — and 0.50 random choice.
 - **"Document-specific" means fact-specific.** A and A2 draw filler from the same 20-sentence pool,
   so ~45% of their prose is shared. That makes the control *tighter* — the effect cannot be generic
   register or vocabulary — but narrows the claim to the planted facts.
@@ -315,10 +321,10 @@ same way and Bonferroni-corrects across the &alpha; grid.
 | condition | facts | mean margin (nats) | 95% CI | accuracy |
 |---|---|---|---|---|
 | cold | A | −0.083 | [−0.207, +0.041] | 0.486 |
-| warm | A | **+0.310** | [+0.167, +0.446] | **0.566** |
+| warm | A | **+0.310** | [+0.167, +0.445] | **0.566** |
 | mismatched | A | −0.087 | [−0.218, +0.040] | 0.465 |
 | cold | B | +17.330 | [16.959, 17.693] | 1.00 |
-| warm | B | +18.206 | [17.875, 18.533] | 1.00 |
+| warm | B | +18.206 | [17.874, 18.533] | 1.00 |
 | mismatched | B | +18.218 | [17.881, 18.537] | 1.00 |
 
 24 seeds × 12 facts = 288 paired observations. CIs bootstrapped over seeds, not items — items
