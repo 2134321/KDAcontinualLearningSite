@@ -476,6 +476,16 @@
       t(23)&nbsp;=&nbsp;+4.15, p&nbsp;=&nbsp;0.0004</strong>, 19 of 24 seeds &mdash; measured on
       24 seeds against the ladder&rsquo;s 8.</li>
 
+      <li><strong>In decisions rather than confidence, the cost nearly vanishes.</strong> At
+      50,000 tokens, &alpha;&nbsp;=&nbsp;4 gains <strong>+7.64 accuracy points</strong> on
+      A-facts (t(23)&nbsp;=&nbsp;+2.74, p&nbsp;=&nbsp;0.012) and loses <strong>0.35</strong> on
+      B &mdash; one item in 288, and not distinguishable from zero. Net accuracy stays positive
+      at every &alpha; tested. The two measures diverge because B&rsquo;s margin sits about 17
+      nats above the decision boundary, so the &minus;3.6 nats that &alpha;&nbsp;=&nbsp;5 costs
+      is a fifth of the way to flipping a single answer. Confidence lost and answers changed are
+      different questions &mdash; and the same headroom that makes the second small is why B
+      accuracy is a weak detector of damage on anything harder.</li>
+
       <li><strong>The useful range of &alpha; shrinks as documents grow.</strong> On B-facts a
       decoy state <em>helps</em> at low &alpha; and hurts at high &alpha;, at both lengths
       &mdash; but it turns costly near &alpha;&nbsp;&asymp;&nbsp;2 on a 600-token document and
