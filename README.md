@@ -179,6 +179,8 @@ C = split, snapshot -> restore into a FRESH cache (surgery)
 | `corpus_2026.txt` | the haystack — Wikipedia articles created after 2026-01-01 (CC BY-SA 4.0) |
 | `results/per_item.csv` | **experiment 1 raw data** — all 1,728 individual measurements |
 | `results/exp2/`, `results/exp3/` | per-item data and run logs for the length ladder and sentence completion |
+| `alpha_sweep.py` | **the &alpha; sweep** — multiplies the transplanted state by &alpha; before document B is read; one model load per run, snapshots reused across &alpha; |
+| `results/alpha/` | per-item data behind every &alpha; chart on the results page — 7,392 measurements across four runs |
 | `index.html` | the results page, self-contained |
 
 ---
@@ -253,6 +255,51 @@ print(st.mean(wm), sum(x > 0 for x in wm), "/", len(wm))   # +0.3962  220 / 288
 
 Everything reported is recomputable from this file without a GPU. The run that produced it
 reproduced the published numbers to the last digit — all seeding is deterministic.
+
+### The scale factor
+
+Four runs back every &alpha; chart on the results page. &alpha; is the factor the transplanted
+state is multiplied by before document B is read, so &alpha;&nbsp;=&nbsp;1 is the untouched
+transplant and each run's &alpha;&nbsp;=&nbsp;1 column replicates the headline at that length.
+
+| file | document A | &alpha; | seeds |
+|---|---|---|---|
+| `results/alpha/sweep_per_item.csv` | 600 tok | 0, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 3 | 24 |
+| `results/alpha/ext_per_item.csv` | 600 tok | 1, 3, 4, 6, 8, 12 | 24 |
+| `results/alpha/k50_24_per_item.csv` | 50,000 tok | 1, 2, 3, 4, 5, 6, 7, 8 | 24 |
+| `results/alpha/long50k_per_item.csv` | 50,000 tok | 0.25, 0.5, 0.75, 1, 2, 3, 4, 6 | 8 |
+
+&alpha;&nbsp;>&nbsp;1 was only ever run at these two lengths — nothing here speaks to 1,500
+through 16,000. Columns:
+
+```
+seed, alpha, item, depth, stem, correct, wrong, cold, warm, mismatched, coldB, warmB, mismB
+```
+
+The six condition columns are margins in nats: `cold` / `warm` / `mismatched` on A-facts, the `B`
+suffixes on the same three conditions measured on B-facts. Note `mismB`, not `mismatchedB`.
+
+Two settings (&alpha;&nbsp;=&nbsp;1 and 3 at 600 tokens) appear in both 600-token runs. The charts
+take **one source per &alpha;**, never an average of the two — averaging would blend two
+separate executions of the same condition.
+
+Recomputing the strongest 50,000-token result, `warm − cold` at &alpha;&nbsp;=&nbsp;5:
+
+```python
+import csv, math, statistics as st
+from collections import defaultdict
+S = defaultdict(list)
+for r in csv.DictReader(open("results/alpha/k50_24_per_item.csv")):
+    if float(r["alpha"]) == 5.0:
+        S[r["seed"]].append(float(r["warm"]) - float(r["cold"]))
+v = [st.mean(x) for x in S.values()]                       # one number per seed
+t = st.mean(v) / (st.stdev(v) / math.sqrt(len(v)))
+print(st.mean(v), t, sum(x > 0 for x in v), "/", len(v))   # +0.4644  +4.15  19 / 24
+```
+
+Statistics are clustered by seed throughout: the twelve items inside a seed share one document and
+one transplanted state, so they are not independent observations. `alpha_sweep.py` aggregates the
+same way and Bonferroni-corrects across the &alpha; grid.
 
 ## Results
 
