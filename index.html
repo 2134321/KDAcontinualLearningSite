@@ -392,14 +392,19 @@
   <section>
     <h2 class="sec">What this does not show</h2>
     <ul class="caveats">
-      <li><strong>Cost grows with larger &alpha;.</strong> At the natural scale the state
-      is not merely harmless on the document in context &mdash; the margin there <em>rises</em>,
-      17.38 to 18.27 nats. By &alpha;&nbsp;=&nbsp;3 it has fallen below cold, and by
-      &alpha;&nbsp;=&nbsp;12 accuracy finally leaves 1.00 (0.9931), the first time in this project
-      that measure has moved at all. So the benefit above is paid for, and the price rises faster
-      than the benefit past &alpha;&nbsp;&asymp;&nbsp;4. What this task still cannot speak to is
-      harder capabilities it never exercises &mdash; multi-step reasoning, long-range dependency
-      &mdash; where a subtler cost could hide.</li>
+      <li><strong>At low &alpha; the state helps both documents.</strong> The lift on A is the
+      point of the experiment; the surprise is that document&nbsp;B improves too. At the natural
+      scale, carrying a state is worth <strong>+0.89 nats</strong> on B over cold
+      (t(23)&nbsp;=&nbsp;+5.46, only 3 of 24 seeds worse), peaking near +0.97 at
+      &alpha;&nbsp;&asymp;&nbsp;1.25. That lift is <em>generic</em> &mdash; warm and mismatched
+      are nearly identical there, 18.27 against 18.20 &mdash; so it is not the state remembering
+      A, it is the state being present at all. It decays as &alpha; rises, crosses zero near
+      &alpha;&nbsp;=&nbsp;2, and only then becomes a cost, which grows steeply: &minus;0.81 at
+      &alpha;&nbsp;=&nbsp;3 and &minus;6.88 at &alpha;&nbsp;=&nbsp;12, where B accuracy finally
+      leaves 1.00 (0.9931) &mdash; the first time in this project that measure has moved at all.
+      So the gain on A is free at low &alpha; and paid for at high &alpha;. What this task still
+      cannot speak to is harder capabilities it never exercises &mdash; multi-step reasoning,
+      long-range dependency &mdash; where a subtler cost could hide.</li>
       <li><strong>&ldquo;Document-specific&rdquo; means fact-specific.</strong> A2 shares roughly
       45% of its carrier sentences with A, because both sample the same filler pool. That makes the
       control <em>tighter</em> than a generic one &mdash; the effect cannot be explained by A&rsquo;s
